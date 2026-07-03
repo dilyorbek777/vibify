@@ -1,0 +1,540 @@
+in console we got
+forward-logs-shared.ts:95 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+forward-logs-shared.ts:95 [HMR] connected
+forward-logs-shared.ts:95  Server  ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+(anonymous) @ forward-logs-shared.ts:95
+forward-logs-shared.ts:95 Shazam API response: {
+  "results": {
+    "artists": {
+      "data": [
+        {
+          "id": "275649746",
+          "type": "artists",
+          "attributes": {
+            "artwork": {
+              "bgColor": "464646",
+              "defaultCropCode": "bb",
+              "hasP3": false,
+              "height": 1075,
+              "textColor1": "f5f5f5",
+              "textColor2": "efefef",
+              "textColor3": "d2d2d2",
+              "textColor4": "cdcdcd",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages211/v4/27/1a/f7/271af792-efe7-669c-5718-458853e1e204/ami-identity-8da1dc8e941a35d55632abba2260c3e5-2025-04-03T17-49-49.610Z_cropped.png/{w}x{h}bb.jpg",
+              "width": 1075
+            },
+            "genreNames": [
+              "Hip-Hop/Rap"
+            ],
+            "name": "G-Eazy",
+            "url": "https://music.apple.com/us/artist/g-eazy/275649746"
+          },
+          "relationships": {
+            "albums": {
+              "data": [
+                {
+                  "id": "1371050450",
+                  "type": "albums"
+                },
+                {
+                  "id": "1053579793",
+                  "type": "albums"
+                },
+                {
+                  "id": "1308645364",
+                  "type": "albums"
+                },
+                {
+                  "id": "1454287516",
+                  "type": "albums"
+                },
+                {
+                  "id": "868738564",
+                  "type": "albums"
+                },
+                {
+                  "id": "1498114134",
+                  "type": "albums"
+                },
+                {
+                  "id": "1392610669",
+                  "type": "albums"
+                },
+                {
+                  "id": "1862162491",
+                  "type": "albums"
+                },
+                {
+                  "id": "1551205499",
+                  "type": "albums"
+                },
+                {
+                  "id": "1450117743",
+                  "type": "albums"
+                },
+                {
+                  "id": "1509791201",
+                  "type": "albums"
+                },
+                {
+                  "id": "1535661637",
+                  "type": "albums"
+                },
+                {
+                  "id": "1457590108",
+                  "type": "albums"
+                },
+                {
+                  "id": "1324158642",
+                  "type": "albums"
+                },
+                {
+                  "id": "1463412317",
+                  "type": "albums"
+                },
+                {
+                  "id": "1431711390",
+                  "type": "albums"
+                },
+                {
+                  "id": "1400566767",
+                  "type": "albums"
+                },
+                {
+                  "id": "1446948334",
+                  "type": "albums"
+                },
+                {
+                  "id": "1479111732",
+                  "type": "albums"
+                },
+                {
+                  "id": "504721417",
+                  "type": "albums"
+                },
+                {
+                  "id": "1483851988",
+                  "type": "albums"
+                },
+                {
+                  "id": "1218446284",
+                  "type": "albums"
+                },
+                {
+                  "id": "1781041366",
+                  "type": "albums"
+                },
+                {
+                  "id": "1694796329",
+                  "type": "albums"
+                },
+                {
+                  "id": "1412186522",
+                  "type": "albums"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "songs": {
+      "data": [
+        {
+          "id": "1053579800",
+          "type": "songs",
+          "attributes": {
+            "albumName": "When It's Dark Out",
+            "artistName": "G-Eazy x Bebe Rexha",
+            "artwork": {
+              "bgColor": "181818",
+              "hasP3": false,
+              "height": 1500,
+              "textColor1": "f0f0f2",
+              "textColor2": "d3d2d2",
+              "textColor3": "c5c5c6",
+              "textColor4": "aeadad",
+              "url": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/09/7f/35/097f3543-b9e7-89c3-bc31-4fac80b4bb44/dj.mmkpchtu.jpg/{w}x{h}bb.jpg",
+              "width": 1500
+            },
+            "audioLocale": "en-US",
+            "audioTraits": [
+              "atmos",
+              "lossless",
+              "lossy-stereo",
+              "spatial"
+            ],
+            "composerName": "Gerald Gillum, Michael Keenan, Christoph Andersson, Bleta Rexha, Tom Barnes, Ben Kohn, Lauren Edwards & Peter Kelleher",
+            "contentRating": "explicit",
+            "discNumber": 1,
+            "durationInMillis": 251465,
+            "genreNames": [
+              "Hip-Hop/Rap",
+       
+forward-logs-shared.ts:95 Has tracks? false
+forward-logs-shared.ts:95 Has tracks.hits? false
+forward-logs-shared.ts:95 Response keys: Array(2)
+intercept-console-error.ts:48 Unknown response structure, returning empty array
+error @ intercept-console-error.ts:48
+
+
+
+
+{
+    "id": "1053579800",
+    "type": "songs",
+    "attributes": {
+        "albumName": "When It's Dark Out",
+        "artistName": "G-Eazy x Bebe Rexha",
+        "artwork": {
+            "bgColor": "181818",
+            "hasP3": false,
+            "height": 1500,
+            "textColor1": "f0f0f2",
+            "textColor2": "d3d2d2",
+            "textColor3": "c5c5c6",
+            "textColor4": "aeadad",
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/09/7f/35/097f3543-b9e7-89c3-bc31-4fac80b4bb44/dj.mmkpchtu.jpg/{w}x{h}bb.jpg",
+            "width": 1500
+        },
+        "audioLocale": "en-US",
+        "audioTraits": [
+            "atmos",
+            "lossless",
+            "lossy-stereo",
+            "spatial"
+        ],
+        "composerName": "Gerald Gillum, Michael Keenan, Christoph Andersson, Bleta Rexha, Tom Barnes, Ben Kohn, Lauren Edwards & Peter Kelleher",
+        "contentRating": "explicit",
+        "discNumber": 1,
+        "durationInMillis": 251465,
+        "genreNames": [
+            "Hip-Hop/Rap",
+            "Music"
+        ],
+        "hasLyrics": true,
+        "hasTimeSyncedLyrics": true,
+        "isAppleDigitalMaster": true,
+        "isMasteredForItunes": true,
+        "isVocalAttenuationAllowed": true,
+        "isrc": "USRC11502210",
+        "name": "Me, Myself & I",
+        "playParams": {
+            "id": "1053579800",
+            "kind": "song"
+        },
+        "previews": [
+            {
+                "url": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/18/14/76/181476de-1364-61c1-f5ae-e837414beed5/mzaf_15389135345977864001.plus.aac.ep.m4a"
+            }
+        ],
+        "releaseDate": "2015-10-14",
+        "trackNumber": 3,
+        "url": "https://music.apple.com/us/album/me-myself-i/1053579793?i=1053579800"
+    },
+    "relationships": {
+        "albums": {
+            "data": [
+                {
+                    "id": "1053579793",
+                    "type": "albums"
+                }
+            ]
+        },
+        "artists": {
+            "data": [
+                {
+                    "id": "275649746",
+                    "type": "artists"
+                },
+                {
+                    "id": "466059563",
+                    "type": "artists"
+                }
+            ]
+        }
+    }
+}
+
+the actual url is inside preview here u can see in the object
+
+
+##### roooooo
+
+
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import { Bebas_Neue, Inter } from 'next/font/google';
+
+const bebas = Bebas_Neue({ subsets: ['latin'], weight: '400' });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600'] });
+
+// ---- deterministic PRNG so server and client render identical output ----
+function mulberry32(seed: number) {
+    let t = seed;
+    return function () {
+        t += 0x6d2b79f5;
+        let r = Math.imul(t ^ (t >>> 15), t | 1);
+        r ^= r + Math.imul(r ^ (r >>> 7), r | 61);
+        return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
+const PALETTE = [
+    '#C4392B', // marquee red
+    '#E8B84B', // ticket gold
+    '#2E6E62', // reel teal
+    '#24365E', // midnight navy
+    '#D8CBB0', // paper cream
+    '#7A3E65', // plum
+    '#B8722E', // amber
+    '#1C1C1C', // near black
+];
+
+interface SphereTile {
+    lat: number;
+    lon: number;
+    color: string;
+    shade: number;
+    id: number;
+}
+
+interface FlatTile {
+    color: string;
+    opacity: number;
+    id: number;
+}
+
+const ROWS = 15;
+const COLS = 26;
+const RADIUS = 220;
+const TILE_W = 32;
+const TILE_H = 46;
+
+const BG_COLS = 16;
+const BG_ROWS = 10;
+
+export default function HoverAnimPage() {
+    const [hovered, setHovered] = useState(false);
+    const [hoveredTile, setHoveredTile] = useState<number | null>(null);
+    const [hoveredBgTile, setHoveredBgTile] = useState<number | null>(null);
+    const [reducedMotion, setReducedMotion] = useState(false);
+    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+
+    useEffect(() => {
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+        setReducedMotion(mq.matches);
+        const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+    }, []);
+
+    const sphereTiles = useMemo<SphereTile[]>(() => {
+        const rand = mulberry32(42);
+        const tiles: SphereTile[] = [];
+        let id = 0;
+        for (let r = 0; r < ROWS; r++) {
+            const lat = -78 + (156 * r) / (ROWS - 1);
+            const lonOffset = r % 2 === 0 ? 0 : 360 / COLS / 2;
+            for (let c = 0; c < COLS; c++) {
+                const lon = (360 / COLS) * c + lonOffset;
+                tiles.push({
+                    id: id++,
+                    lat,
+                    lon,
+                    color: PALETTE[Math.floor(rand() * PALETTE.length)],
+                    shade: 0.55 + rand() * 0.45,
+                });
+            }
+        }
+        return tiles;
+    }, []);
+
+    const hoveredTileData = useMemo(() => {
+        if (hoveredTile === null) return null;
+        return sphereTiles.find((t) => t.id === hoveredTile);
+    }, [hoveredTile, sphereTiles]);
+
+    const flatTiles = useMemo<FlatTile[]>(() => {
+        const rand = mulberry32(7);
+        const count = BG_COLS * BG_ROWS;
+        const tiles: FlatTile[] = [];
+        for (let i = 0; i < count; i++) {
+            tiles.push({
+                id: i,
+                color: PALETTE[Math.floor(rand() * PALETTE.length)],
+                opacity: 0.18 + rand() * 0.4,
+            });
+        }
+        return tiles;
+    }, []);
+
+    const hoveredBgTileData = useMemo(() => {
+        if (hoveredBgTile === null) return null;
+        return flatTiles.find((t) => t.id === hoveredBgTile);
+    }, [hoveredBgTile, flatTiles]);
+
+
+    return (
+        <main 
+            className="relative min-h-screen w-full overflow-hidden bg-[#050507] flex items-center justify-center"
+            onMouseMove={(e) => setCursorPosition({ x: e.clientX, y: e.clientY })}
+        >
+            <style>{`
+        @keyframes spin-sphere {
+          from { transform: rotateY(0deg); }
+          to { transform: rotateY(360deg); }
+        }
+      `}</style>
+
+            {/* full-bleed mosaic backdrop */}
+            <div
+                className="absolute inset-0 grid"
+                style={{ gridTemplateColumns: `repeat(${BG_COLS}, 1fr)` }}
+            >
+                {flatTiles.map((t, i) => (
+                    <div
+                        key={i}
+                        style={{
+                            backgroundColor: t.color,
+                            opacity: hoveredBgTile === t.id ? 1 : t.opacity,
+                            transform: hoveredBgTile === t.id ? 'scale(1.1)' : 'scale(1)',
+                            boxShadow: hoveredBgTile === t.id ? `0 0 20px ${t.color}, 0 0 40px rgba(0,0,0,0.8)` : 'none',
+                            zIndex: hoveredBgTile === t.id ? 100 : 1,
+                        }}
+                        className="aspect-[2/3] cursor-pointer transition-all duration-300 rounded-sm"
+                        onMouseEnter={() => setHoveredBgTile(t.id)}
+                        onMouseLeave={() => setHoveredBgTile(null)}
+                    />
+                ))}
+            </div>
+
+            {/* vignette */}
+            {/* <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            'radial-gradient(ellipse at center, rgba(5,5,7,0.35) 0%, rgba(5,5,7,0.75) 55%, rgba(5,5,7,0.97) 100%)',
+        }}
+        aria-hidden
+      /> */}
+
+            {/* info card for background tiles */}
+            {hoveredBgTileData && (
+                <div
+                    className="absolute z-30 rounded-md overflow-hidden transition-all duration-300 ease-out pointer-events-none"
+                    style={{
+                        top: cursorPosition.y + 20,
+                        left: cursorPosition.x + 20,
+                        width: 200,
+                        height: 240,
+                        boxShadow: `0 0 0 1px ${hoveredBgTileData.color}80, 0 25px 60px rgba(0,0,0,0.7), 0 0 40px ${hoveredBgTileData.color}40`,
+                        background: `linear-gradient(200deg, ${hoveredBgTileData.color} 0%, #24365E 60%, #1c1c1c 100%)`,
+                    }}
+                >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/40" />
+                    <div className="absolute inset-x-0 bottom-0 p-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <div
+                                className="w-6 h-6 rounded-sm"
+                                style={{ backgroundColor: hoveredBgTileData.color }}
+                            />
+                            <p className={`${bebas.className} text-white text-2xl leading-tight tracking-wide`}>
+                                TILE #{hoveredBgTileData.id}
+                            </p>
+                        </div>
+                        <p className={`${inter.className} text-xs text-white/80 mb-1`}>
+                            <span className="text-white/50">Opacity:</span> {(hoveredBgTileData.opacity * 100).toFixed(0)}%
+                        </p>
+                        <p className={`${inter.className} text-[10px] text-white/50 mt-2`}>
+                            Color: {hoveredBgTileData.color}
+                        </p>
+                    </div>
+                    <div className="absolute inset-0 ring-1 ring-white/10 rounded-md pointer-events-none" />
+                </div>
+            )}
+
+
+            {/* full-page interactive tile grid */}
+            {/* <div
+        className="relative z-10 w-full h-full"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div
+          className="absolute inset-0 grid grid-cols-10 items-center justify-center gap-10"
+       
+        >
+          {sphereTiles.map((t, i) => (
+            <div
+              key={i}
+              className="rounded-[2px] overflow-hidden cursor-pointer transition-all duration-300"
+              style={{
+                aspectRatio: `${TILE_W}/${TILE_H}`,
+                background: `linear-gradient(160deg, ${t.color}, rgba(0,0,0,0.6))`,
+                opacity: hoveredTile === t.id ? 1 : t.shade,
+                transform: hoveredTile === t.id ? 'scale(1.08)' : 'scale(1)',
+                boxShadow: hoveredTile === t.id ? `0 0 15px ${t.color}, 0 0 30px rgba(0,0,0,0.8)` : '0 0 4px rgba(0,0,0,0.3)',
+                zIndex: hoveredTile === t.id ? 100 : 1,
+              }}
+              onMouseEnter={() => setHoveredTile(t.id)}
+              onMouseLeave={() => setHoveredTile(null)}
+            >
+              <div className="h-1.5 w-full bg-white/15" />
+            </div>
+          ))}
+        </div>
+
+        <div
+          className={`absolute z-30 rounded-md overflow-hidden transition-all duration-500 ease-out ${
+            hoveredTileData ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+          }`}
+          style={{
+            top: '50%',
+            left: '50%',
+            width: 220,
+            height: 280,
+            transform: 'translate(-50%, -50%)',
+            boxShadow: hoveredTileData
+              ? `0 0 0 1px ${hoveredTileData.color}80, 0 25px 60px rgba(0,0,0,0.7), 0 0 40px ${hoveredTileData.color}40`
+              : '0 20px 45px rgba(0,0,0,0.6)',
+            background: hoveredTileData
+              ? `linear-gradient(200deg, ${hoveredTileData.color} 0%, #24365E 60%, #1c1c1c 100%)`
+              : 'linear-gradient(200deg, #C4392B 0%, #24365E 60%, #1c1c1c 100%)',
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/40" />
+          {hoveredTileData && (
+            <div className="absolute inset-x-0 bottom-0 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div
+                  className="w-6 h-6 rounded-sm"
+                  style={{ backgroundColor: hoveredTileData.color }}
+                />
+                <p className={`${bebas.className} text-white text-2xl leading-tight tracking-wide`}>
+                  TILE #{hoveredTileData.id}
+                </p>
+              </div>
+              <p className={`${inter.className} text-xs text-white/80 mb-1`}>
+                <span className="text-white/50">Latitude:</span> {hoveredTileData.lat.toFixed(1)}°
+              </p>
+              <p className={`${inter.className} text-xs text-white/80 mb-1`}>
+                <span className="text-white/50">Longitude:</span> {hoveredTileData.lon.toFixed(1)}°
+              </p>
+              <p className={`${inter.className} text-xs text-white/80 mb-1`}>
+                <span className="text-white/50">Brightness:</span> {(hoveredTileData.shade * 100).toFixed(0)}%
+              </p>
+              <p className={`${inter.className} text-[10px] text-white/50 mt-2`}>
+                Color: {hoveredTileData.color}
+              </p>
+            </div>
+          )}
+          <div className="absolute inset-0 ring-1 ring-white/10 rounded-md pointer-events-none" />
+        </div>
+
+      </div> */}
+        </main>
+    );
+}
