@@ -72,11 +72,11 @@ export default function Home() {
   }, [searchQuery, handleSearch])
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
+    <Suspense fallback={<>Loading...</>}>
+      <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
 
 
 
-      <Suspense fallback={<>Loading...</>}>
         {/* Main Layout View */}
         <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-12 pb-24">
 
@@ -230,7 +230,7 @@ export default function Home() {
             </div>
           </section>
         </main>
-      </Suspense>
-    </div>
+      </div>
+    </Suspense>
   )
 }
