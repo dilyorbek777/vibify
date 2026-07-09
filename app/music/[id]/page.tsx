@@ -49,7 +49,8 @@ export default function MusicPage() {
           textColor2: attrs?.artwork?.textColor2 || null,
           textColor3: attrs?.artwork?.textColor3 || null,
           textColor4: attrs?.artwork?.textColor4 || null,
-          listenedAt: Date.now()
+          listenedAt: Date.now(),
+          musicUrl: audioUrl || ''
         }
 
         setSong(songData)
@@ -193,7 +194,8 @@ export default function MusicPage() {
                       artist: song.artist,
                       album: song.album,
                       image: song.image,
-                      likedAt: Date.now()
+                      likedAt: Date.now(),
+                      musicUrl: audioUrl || ''
                     })
                     setIsLiked(!isLiked)
                   }
@@ -226,9 +228,10 @@ export default function MusicPage() {
                 href={`/artist/${artistId}`}
                 className="group relative h-32 rounded-2xl overflow-hidden border border-border/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl"
                 style={{
-                  backgroundImage: `url(${song.image?.replace('400x400bb', '800x800bb')})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
+                  // backgroundImage: `url(${song.image?.replace('400x400bb', '800x800bb')})`,
+                  background: `linear-gradient(to bottom, #${song.textColor1}, #${song.textColor2})`,
+                  // backgroundSize: 'cover',
+                  // backgroundPosition: 'center'
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />

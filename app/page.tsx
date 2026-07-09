@@ -7,11 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Play, Disc, Layers, Music4, Radio, UserStar } from 'lucide-react'
 import { searchSongs, formatShazamTrack } from '@/lib/shazam-api'
 import { getLikedSongs, getRecentlyListened } from '@/lib/local-storage'
+import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Link from 'next/link'
 
 // 1. Change this from default export to a regular function named HomeContent
 function HomeContent() {
   const searchParams = useSearchParams()
+  const { playPlaylist, isPlaying } = useMusicPlayer()
   const queryParam = searchParams.get('q') || ''
   const [searchQuery, setSearchQuery] = useState(queryParam)
   const [searchResults, setSearchResults] = useState<any[]>([])
@@ -51,6 +53,22 @@ function HomeContent() {
       setIsSearching(false)
     }
   }, [])
+
+  const handlePlayLikedSongs = useCallback(() => {
+    if (likedSongs.length === 0) return
+
+    const songs = likedSongs.map(song => ({
+      id: song.id,
+      name: song.name,
+      artist: song.artist,
+      album: song.album,
+      image: song.image,
+      totalSeconds: 0, // Will be updated by audio duration
+    }))
+
+    const urls = likedSongs.map(song => song.musicUrl)
+    playPlaylist(songs, urls)
+  }, [likedSongs, playPlaylist])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -131,6 +149,15 @@ function HomeContent() {
           Check out our <Link href="/hover-anim" className="text-primary hover:underline font-semibold bg-primary/30 px-4 py-1 rounded-xl">Hover Animation Page</Link>
         </p>
 
+        <Button 
+          onClick={handlePlayLikedSongs}
+          disabled={likedSongs.length === 0 || isPlaying}
+          className="w-full md:w-auto"
+        >
+          <Play className="h-4 w-4 mr-2" />
+          {isPlaying ? 'Playing...' : 'Play Liked Songs'}
+        </Button>
+
         {/* Featured Playlists Section */}
         <section>
           <div className="flex items-center justify-between mb-6">
@@ -175,7 +202,7 @@ function HomeContent() {
           <section>
             <h2 className="text-2xl font-bold tracking-tight mb-6">Recently Played</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {recentlyPlayed.map(track => (
+              {recentlyPlayed.slice(0, 7).map(track => (
                 <Link
                   key={track.id}
                   href={`/music/${track.id}`}
@@ -196,6 +223,22 @@ function HomeContent() {
                   </div>
                 </Link>
               ))}
+              {recentlyPlayed.length > 7 && (
+                <Link
+                  href="/recents"
+                  className="group bg-card/30 hover:bg-card/70 border border-border/10 p-3 rounded-xl flex items-center justify-start gap-4 cursor-pointer transition-all duration-200"
+                >
+                  <div className="h-14 w-14 rounded-md bg-muted/60 flex items-center justify-center text-2xl shrink-0 shadow-inner group-hover:scale-95 transition-transform duration-200">
+                    <Layers className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors">
+                      View All
+                    </h4>
+                    <p className="text-xs text-muted-foreground">{recentlyPlayed.length} songs</p>
+                  </div>
+                </Link>
+              )}
             </div>
           </section>
         )}

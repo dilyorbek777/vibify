@@ -48,8 +48,41 @@ interface ShazamResponse {
   };
 }
 
-const SHAZAM_API_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY || '4f8712d382mshfaa3517bffdad81p136abfjsn293bbff5b12b';
 const SHAZAM_API_HOST = 'shazam.p.rapidapi.com';
+
+function getApiKey(): string {
+  return process.env.NEXT_PUBLIC_RAPIDAPI_KEY || '4f8712d382mshfaa3517bffdad81p136abfjsn293bbff5b12b';
+}
+
+function getFallbackApiKey(): string {
+  return process.env.NEXT_PUBLIC_RAPIDAPI_KEY2 || '';
+}
+
+async function fetchWithFallback(url: string, options: RequestInit): Promise<Response> {
+  const firstKey = getApiKey();
+  const fallbackKey = getFallbackApiKey();
+
+  const makeRequest = async (apiKey: string) => {
+    const requestOptions = {
+      ...options,
+      headers: {
+        ...options.headers,
+        'x-rapidapi-key': apiKey,
+        'x-rapidapi-host': SHAZAM_API_HOST,
+      },
+    };
+    return fetch(url, requestOptions);
+  };
+
+  let response = await makeRequest(firstKey);
+
+  if (!response.ok && response.status === 429 && fallbackKey) {
+    console.log('Primary API key quota exceeded, trying fallback key');
+    response = await makeRequest(fallbackKey);
+  }
+
+  return response;
+}
 
 export async function searchSongs(query: string, limit: number = 10): Promise<ShazamSong[]> {
   const url = `https://${SHAZAM_API_HOST}/v2/search?term=${encodeURIComponent(query)}&locale=en-US&offset=0&limit=${limit}`;
@@ -57,14 +90,12 @@ export async function searchSongs(query: string, limit: number = 10): Promise<Sh
   const options = {
     method: 'GET',
     headers: {
-      'x-rapidapi-key': SHAZAM_API_KEY,
-      'x-rapidapi-host': SHAZAM_API_HOST,
       'Content-Type': 'application/json',
     },
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithFallback(url, options);
     
     if (!response.ok) {
       if (response.status === 429) {
@@ -133,14 +164,12 @@ export async function getSongDetails(id: string) {
   const options = {
     method: 'GET',
     headers: {
-      'x-rapidapi-key': SHAZAM_API_KEY,
-      'x-rapidapi-host': SHAZAM_API_HOST,
       'Content-Type': 'application/json',
     },
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithFallback(url, options);
     
     if (!response.ok) {
       if (response.status === 429) {
@@ -226,14 +255,12 @@ export async function getArtistDetails(artistId: string): Promise<AppleMusicArti
   const options = {
     method: 'GET',
     headers: {
-      'x-rapidapi-key': SHAZAM_API_KEY,
-      'x-rapidapi-host': SHAZAM_API_HOST,
       'Content-Type': 'application/json',
     },
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithFallback(url, options);
     
     if (!response.ok) {
       if (response.status === 429) {
@@ -263,14 +290,12 @@ export async function getArtistAlbums(artistId: string): Promise<AppleMusicAlbum
   const options = {
     method: 'GET',
     headers: {
-      'x-rapidapi-key': SHAZAM_API_KEY,
-      'x-rapidapi-host': SHAZAM_API_HOST,
       'Content-Type': 'application/json',
     },
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithFallback(url, options);
     
     if (!response.ok) {
       if (response.status === 429) {
@@ -301,14 +326,12 @@ export async function getArtistTopSongs(artistId: string): Promise<ShazamSong[]>
   const options = {
     method: 'GET',
     headers: {
-      'x-rapidapi-key': SHAZAM_API_KEY,
-      'x-rapidapi-host': SHAZAM_API_HOST,
       'Content-Type': 'application/json',
     },
   };
 
   try {
-    const response = await fetch(url, options);
+    const response = await fetchWithFallback(url, options);
     
     if (!response.ok) {
       if (response.status === 429) {

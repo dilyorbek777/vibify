@@ -7,7 +7,7 @@ import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import { useEffect } from 'react'
 
 export function MusicPlayer() {
-  const { currentSong, isPlaying, progress, audioUrl, togglePlay, handleSeek } = useMusicPlayer()
+  const { currentSong, isPlaying, progress, audioUrl, volume, togglePlay, handleSeek, handleVolumeChange, playNext, playPrevious } = useMusicPlayer()
 
 useEffect(() => {
   const handleKeydown = (e: KeyboardEvent) => {
@@ -55,13 +55,13 @@ useEffect(() => {
         </div>
         <div className="flex-1 max-w-xl flex flex-col items-center gap-2">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+            <Button onClick={playPrevious} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
               <SkipBack className="h-4 w-4 fill-current" />
             </Button>
             <Button onClick={togglePlay} size="icon" disabled={!audioUrl} className="h-9 w-9 rounded-full bg-foreground text-background hover:scale-105 transition-transform disabled:opacity-50">
               {isPlaying ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current ml-0.5" />}
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+            <Button onClick={playNext} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
               <SkipForward className="h-4 w-4 fill-current" />
             </Button>
           </div>
@@ -83,7 +83,7 @@ useEffect(() => {
         </Button>
         <div className="w-1/4 justify-end gap-3 items-center hidden md:flex text-muted-foreground">
           <Volume2 className="h-4 w-4 shrink-0" />
-          <Slider defaultValue={[75]} max={100} step={1} className="w-24 cursor-pointer" />
+          <Slider value={[volume]} onValueChange={handleVolumeChange} max={100} step={1} className="w-24 cursor-pointer" />
         </div>
       </div>
     </footer>

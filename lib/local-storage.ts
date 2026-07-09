@@ -7,6 +7,7 @@ interface RecentlyListenedSong {
   image: string
   coverArt: string
   listenedAt: number
+  musicUrl: string
 }
 
 const STORAGE_KEY = 'vibify_recently_listened'
@@ -56,11 +57,87 @@ export const addToRecentlyListened = (song: RecentlyListenedSong): void => {
 
 export const clearRecentlyListened = (): void => {
   if (typeof window === 'undefined') return
-  
+
   try {
     localStorage.removeItem(STORAGE_KEY)
   } catch (error) {
     console.error('Error clearing localStorage:', error)
+  }
+}
+
+export const removeFromRecentlyListened = (songId: string): void => {
+  if (typeof window === 'undefined') return
+
+  try {
+    const current = getRecentlyListened()
+    const updated = current.filter(s => s.id !== songId)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+  } catch (error) {
+    console.error('Error removing song from recently listened:', error)
+  }
+}
+
+const VIEW_PREFERENCE_KEY = 'vibify_view_preference'
+
+export const getViewPreference = (): 'grid' | 'list' => {
+  if (typeof window === 'undefined') return 'grid'
+
+  try {
+    const data = localStorage.getItem(VIEW_PREFERENCE_KEY)
+    return data === 'list' ? 'list' : 'grid'
+  } catch (error) {
+    console.error('Error reading view preference:', error)
+    return 'grid'
+  }
+}
+
+export const setViewPreference = (view: 'grid' | 'list'): void => {
+  if (typeof window === 'undefined') return
+
+  try {
+    localStorage.setItem(VIEW_PREFERENCE_KEY, view)
+  } catch (error) {
+    console.error('Error saving view preference:', error)
+  }
+}
+
+const SEARCH_HISTORY_KEY = 'vibify_search_history'
+
+export const getSearchHistory = (): string[] => {
+  if (typeof window === 'undefined') return []
+
+  try {
+    const data = localStorage.getItem(SEARCH_HISTORY_KEY)
+    return data ? JSON.parse(data) : []
+  } catch (error) {
+    console.error('Error reading search history:', error)
+    return []
+  }
+}
+
+export const addSearchToHistory = (query: string): void => {
+  if (typeof window === 'undefined') return
+  if (!query.trim()) return
+
+  try {
+    const current = getSearchHistory()
+    // Remove if already exists to move to front
+    const filtered = current.filter(q => q !== query)
+    // Add to front
+    const updated = [query, ...filtered].slice(0, 20) // Keep last 20
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(updated))
+  } catch (error) {
+    console.error('Error saving search to history:', error)
+  }
+}
+
+export const clearSearchHistory = (): void => {
+  if (typeof window === 'undefined') return
+
+  try {
+    localStorage.removeItem(SEARCH_HISTORY_KEY)
+  } catch (error) {
+    console.error('Error clearing search history:', error)
   }
 }
 
@@ -72,6 +149,7 @@ interface LikedSong {
   album: string
   image: string
   likedAt: number
+  musicUrl: string
 }
 
 const LIKED_SONGS_KEY = 'vibify_liked_songs'

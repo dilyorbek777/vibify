@@ -1,25 +1,55 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { Moon, Sun, Search } from "lucide-react"
+import { Moon, Sun, Search, Clock, X } from "lucide-react"
 import { Button } from "./ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { Input } from "./ui/input"
 import { themes } from "@/constants"
 import { useTheme } from "@/contexts/theme-context"
 import Link from "next/link"
+import { getSearchHistory, addSearchToHistory } from "@/lib/local-storage"
 
 const Navbar = () => {
   const router = useRouter()
   const { theme, setTheme, isDarkMode, toggleDarkMode } = useTheme()
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchHistory, setSearchHistory] = useState<string[]>([])
+  const [showDropdown, setShowDropdown] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setSearchHistory(getSearchHistory())
+  }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
+      addSearchToHistory(searchQuery.trim())
+      setSearchHistory(getSearchHistory())
       router.push(`/?q=${encodeURIComponent(searchQuery.trim())}`)
+      setShowDropdown(false)
     }
+  }
+
+  const handleHistoryClick = (query: string) => {
+    setSearchQuery(query)
+    addSearchToHistory(query)
+    setSearchHistory(getSearchHistory())
+    router.push(`/?q=${encodeURIComponent(query)}`)
+    setShowDropdown(false)
   }
 
   return (
@@ -37,16 +67,37 @@ const Navbar = () => {
           </Link>
 
           {/* Search Bar Wrapper */}
-          <form onSubmit={handleSearch} className="relative flex-1 max-w-md hidden sm:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="What do you want to listen to?"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 bg-muted/50 border-border/50 focus-visible:ring-primary/50 transition-all rounded-full"
-            />
-          </form>
+          <div ref={searchRef} className="relative flex-1 max-w-md hidden sm:block">
+            <form onSubmit={handleSearch}>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+              <Input
+                type="text"
+                placeholder="What do you want to listen to?"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setShowDropdown(true)}
+                className="w-full pl-9 bg-muted/50 border-border/50 focus-visible:ring-primary/50 transition-all rounded-full"
+              />
+            </form>
+
+            {/* Search History Dropdown */}
+            {showDropdown && searchHistory.length > 0 && (
+              <div className="absolute bg-background/60 backdrop-blur-xl top-full left-0 right-0 mt-2 border border-border/60 rounded-xl shadow-xl overflow-hidden z-50">
+                <div className="p-2 space-y-1 bg-background/60 backdrop-blur-xl">
+                  {searchHistory.slice(0, 7).map((query, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleHistoryClick(query)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                    >
+                      <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <span className="text-sm truncate">{query}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Actions */}
           <div className="flex items-center gap-3">
