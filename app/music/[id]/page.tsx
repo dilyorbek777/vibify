@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuItem, DropdownMenuHeader, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { Toast } from '@/components/ui/toast'
 import { getSongDetails, getArtistDetails, getArtistTopSongs, formatShazamTrack } from '@/lib/shazam-api'
-import { addToRecentlyListened, isSongLiked, toggleLikedSong } from '@/lib/local-storage'
-import { Play, Pause, Heart, MoreHorizontal, Disc, Calendar, Flame, Music3 } from 'lucide-react'
+import { addToRecentlyListened, isSongLiked, toggleLikedSong, getPlaylists, createPlaylist, addSongToPlaylist } from '@/lib/local-storage'
+import { Play, Pause, Heart, MoreHorizontal, Disc, Calendar, Flame, Music3, Music4, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
+import BackgroundPattern from '@/components/BackgroundPattern'
 
 export default function MusicPage() {
   const params = useParams()
@@ -21,6 +24,15 @@ export default function MusicPage() {
   const [albumId, setAlbumId] = useState<string | null>(null)
   const [artistTopSongs, setArtistTopSongs] = useState<any[]>([])
   const [loadingSongs, setLoadingSongs] = useState(false)
+  const [playlists, setPlaylists] = useState<any[]>([])
+  const [showCreatePlaylist, setShowCreatePlaylist] = useState(false)
+  const [newPlaylistName, setNewPlaylistName] = useState('')
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  useEffect(() => {
+    setPlaylists(getPlaylists())
+  }, [])
 
   useEffect(() => {
     async function fetchSong() {
@@ -101,6 +113,46 @@ export default function MusicPage() {
     fetchArtistTopSongs()
   }, [artistIds])
 
+  const handleCreatePlaylist = () => {
+    const name = newPlaylistName.trim() || undefined
+    const newPlaylist = createPlaylist(name)
+    setPlaylists([...playlists, newPlaylist])
+    
+    if (song) {
+      addSongToPlaylist(newPlaylist.id, {
+        id: song.id,
+        name: song.name,
+        artist: song.artist,
+        album: song.album,
+        image: song.image,
+        musicUrl: audioUrl || ''
+      })
+      setToastMessage(`Added to "${newPlaylist.name}"`)
+    }
+    
+    setNewPlaylistName('')
+    setShowCreatePlaylist(false)
+    setIsDropdownOpen(false)
+  }
+
+  const handleAddToPlaylist = (playlistId: string) => {
+    if (song) {
+      const playlist = playlists.find(p => p.id === playlistId)
+      addSongToPlaylist(playlistId, {
+        id: song.id,
+        name: song.name,
+        artist: song.artist,
+        album: song.album,
+        image: song.image,
+        musicUrl: audioUrl || ''
+      })
+      if (playlist) {
+        setToastMessage(`Added to "${playlist.name}"`)
+      }
+      setIsDropdownOpen(false)
+    }
+  }
+
 
   if (loading) {
     return (
@@ -126,6 +178,7 @@ export default function MusicPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground select-none pb-40">
+      <BackgroundPattern />
       <div
         className="relative"
         style={{
@@ -203,9 +256,73 @@ export default function MusicPage() {
               >
                 <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
               </Button>
-              <Button variant="outline" size="icon" className="rounded-full h-12 w-12 border-border/60 hover:bg-muted">
-                <MoreHorizontal className="h-5 w-5" />
-              </Button>
+
+
+              <DropdownMenu
+                isOpen={isDropdownOpen}
+                onOpenChange={setIsDropdownOpen}
+                trigger={
+                  <Button variant="outline" size="icon" className="rounded-full h-12 w-12 border-border/60 hover:bg-muted">
+                    <MoreHorizontal className="h-5 w-5" />
+                  </Button>
+                }
+              >
+                <DropdownMenuHeader>Add to Playlist</DropdownMenuHeader>
+                {playlists.length === 0 ? (
+                  <div className="px-4 py-6 text-center">
+                    <p className="text-sm text-muted-foreground mb-1">No playlists yet</p>
+                    <p className="text-xs text-muted-foreground/60">Create one to get started</p>
+                  </div>
+                ) : (
+                  <>
+                    {playlists.map((playlist) => (
+                      <DropdownMenuItem
+                        key={playlist.id}
+                        onClick={() => handleAddToPlaylist(playlist.id)}
+                        icon={<Music4 className="h-4 w-4" />}
+                      >
+                        {playlist.name}
+                        <span className="text-xs text-muted-foreground ml-auto">
+                          {playlist.songs.length}
+                        </span>
+                      </DropdownMenuItem>
+                    ))}
+                  </>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setShowCreatePlaylist(true)}
+                  className="font-semibold text-primary"
+                  icon={<Plus className="h-4 w-4" />}
+                >
+                  Create new playlist
+                </DropdownMenuItem>
+              </DropdownMenu>
+
+              {showCreatePlaylist && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div className="bg-card border border-border/40 rounded-xl p-6 w-96 max-w-[90vw]">
+                    <h3 className="text-lg font-bold mb-4 font-heading">Create New Playlist</h3>
+                    <input
+                      type="text"
+                      placeholder="Playlist name (optional)"
+                      value={newPlaylistName}
+                      onChange={(e) => setNewPlaylistName(e.target.value)}
+                      className="w-full bg-background border border-border/40 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 mb-4"
+                      onKeyDown={(e) => e.key === 'Enter' && handleCreatePlaylist()}
+                      autoFocus
+                    />
+                    <div className="flex gap-2 justify-end">
+                      <Button onClick={() => setShowCreatePlaylist(false)} variant="outline" className="cursor-pointer">
+                        Cancel
+                      </Button>
+                      <Button onClick={handleCreatePlaylist} className="cursor-pointer">
+                        Create & Add
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center gap-4 text-xs font-semibold text-muted-foreground/80 md:ml-4 bg-muted/30 px-4 py-2 rounded-xl border border-border/10">
                 <span className="flex items-center gap-1"><Flame className="h-3.5 w-3.5 text-primary" /> {song.plays} Plays</span>
                 <span className="h-3 w-px bg-border/40" />
@@ -306,6 +423,13 @@ export default function MusicPage() {
           </section>
         )}
       </main>
+
+      {toastMessage && (
+        <Toast
+          message={toastMessage}
+          onClose={() => setToastMessage(null)}
+        />
+      )}
     </div>
   )
 } 

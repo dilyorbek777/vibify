@@ -210,3 +210,122 @@ export const toggleLikedSong = (song: LikedSong): void => {
     addToLikedSongs(song)
   }
 }
+
+// Playlists
+interface PlaylistSong {
+  id: string
+  name: string
+  artist: string
+  album: string
+  image: string
+  musicUrl: string
+}
+
+interface Playlist {
+  id: string
+  name: string
+  songs: PlaylistSong[]
+  createdAt: number
+}
+
+const PLAYLISTS_KEY = 'vibify_playlists'
+
+export const getPlaylists = (): Playlist[] => {
+  if (typeof window === 'undefined') return []
+  
+  try {
+    const data = localStorage.getItem(PLAYLISTS_KEY)
+    return data ? JSON.parse(data) : []
+  } catch (error) {
+    console.error('Error reading playlists from localStorage:', error)
+    return []
+  }
+}
+
+export const createPlaylist = (name?: string): Playlist => {
+  if (typeof window === 'undefined') {
+    return { id: '', name: name || '', songs: [], createdAt: Date.now() }
+  }
+  
+  try {
+    const playlists = getPlaylists()
+    const playlistName = name || `Playlist #${playlists.length + 1}`
+    const newPlaylist: Playlist = {
+      id: `playlist_${Date.now()}`,
+      name: playlistName,
+      songs: [],
+      createdAt: Date.now()
+    }
+    
+    const updated = [...playlists, newPlaylist]
+    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(updated))
+    return newPlaylist
+  } catch (error) {
+    console.error('Error creating playlist:', error)
+    return { id: '', name: name || '', songs: [], createdAt: Date.now() }
+  }
+}
+
+export const addSongToPlaylist = (playlistId: string, song: PlaylistSong): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    const playlists = getPlaylists()
+    const playlistIndex = playlists.findIndex(p => p.id === playlistId)
+    
+    if (playlistIndex === -1) return
+    
+    // Check if song already exists in playlist
+    const songExists = playlists[playlistIndex].songs.some(s => s.id === song.id)
+    if (songExists) return
+    
+    playlists[playlistIndex].songs.push(song)
+    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(playlists))
+  } catch (error) {
+    console.error('Error adding song to playlist:', error)
+  }
+}
+
+export const removeSongFromPlaylist = (playlistId: string, songId: string): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    const playlists = getPlaylists()
+    const playlistIndex = playlists.findIndex(p => p.id === playlistId)
+    
+    if (playlistIndex === -1) return
+    
+    playlists[playlistIndex].songs = playlists[playlistIndex].songs.filter(s => s.id !== songId)
+    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(playlists))
+  } catch (error) {
+    console.error('Error removing song from playlist:', error)
+  }
+}
+
+export const deletePlaylist = (playlistId: string): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    const playlists = getPlaylists()
+    const updated = playlists.filter(p => p.id !== playlistId)
+    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(updated))
+  } catch (error) {
+    console.error('Error deleting playlist:', error)
+  }
+}
+
+export const updatePlaylistName = (playlistId: string, name: string): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    const playlists = getPlaylists()
+    const playlistIndex = playlists.findIndex(p => p.id === playlistId)
+    
+    if (playlistIndex === -1) return
+    
+    playlists[playlistIndex].name = name
+    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(playlists))
+  } catch (error) {
+    console.error('Error updating playlist name:', error)
+  }
+}

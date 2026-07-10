@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { getRecentlyListened, removeFromRecentlyListened, getViewPreference, setViewPreference } from '@/lib/local-storage'
 import { ArrowLeft, Layers, Trash2, List, Grid3x3 } from 'lucide-react'
+import BackgroundPattern from '@/components/BackgroundPattern'
 
 export default function RecentsPage() {
   const [recentlyPlayed, setRecentlyPlayed] = useState<any[]>([])
@@ -29,6 +30,8 @@ export default function RecentsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
+      <BackgroundPattern />
+
       <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-8 pb-24">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

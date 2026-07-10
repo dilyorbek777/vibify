@@ -4,11 +4,12 @@ import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Play, Disc, Layers, Music4, Radio, UserStar, Heart } from 'lucide-react'
+import { Play, Disc, Layers, Music4, Radio, UserStar, Heart, Plus } from 'lucide-react'
 import { searchSongs, formatShazamTrack } from '@/lib/shazam-api'
-import { getLikedSongs, getRecentlyListened } from '@/lib/local-storage'
+import { getLikedSongs, getRecentlyListened, getPlaylists, createPlaylist } from '@/lib/local-storage'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Link from 'next/link'
+import BackgroundPattern from '@/components/BackgroundPattern'
 
 // 1. Change this from default export to a regular function named HomeContent
 function HomeContent() {
@@ -21,6 +22,9 @@ function HomeContent() {
   const [searchError, setSearchError] = useState<string | null>(null)
   const [recentlyPlayed, setRecentlyPlayed] = useState<any[]>([])
   const [likedSongs, setLikedSongs] = useState<any[]>([])
+  const [playlists, setPlaylists] = useState<any[]>([])
+  const [showCreatePlaylist, setShowCreatePlaylist] = useState(false)
+  const [newPlaylistName, setNewPlaylistName] = useState('')
 
   useEffect(() => {
     setSearchQuery(queryParam)
@@ -29,6 +33,7 @@ function HomeContent() {
   useEffect(() => {
     setRecentlyPlayed(getRecentlyListened())
     setLikedSongs(getLikedSongs())
+    setPlaylists(getPlaylists())
   }, [])
 
   const handleSearch = useCallback(async (query: string) => {
@@ -70,6 +75,14 @@ function HomeContent() {
     playPlaylist(songs, urls)
   }, [likedSongs, playPlaylist])
 
+  const handleCreatePlaylist = useCallback(() => {
+    const name = newPlaylistName.trim() || undefined
+    const newPlaylist = createPlaylist(name)
+    setPlaylists([...playlists, newPlaylist])
+    setNewPlaylistName('')
+    setShowCreatePlaylist(false)
+  }, [newPlaylistName, playlists])
+
   useEffect(() => {
     const timer = setTimeout(() => {
       handleSearch(searchQuery)
@@ -80,12 +93,13 @@ function HomeContent() {
 
   return (
     // 2. Remove the <Suspense> tags from here entirely
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 relative">
+      <BackgroundPattern />
 
 
 
       {/* Main Layout View */}
-      <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-12 pb-24">
+      <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-12 z-10 pb-24">
 
         {/* Search Results Section */}
         {searchQuery && (
@@ -150,7 +164,68 @@ function HomeContent() {
         )}
 
 
-        <section></section>
+        {/* Playlists Section */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight font-heading">Your Playlists</h2>
+              <p className="text-sm text-muted-foreground">Create and manage your playlists.</p>
+            </div>
+            <Button onClick={() => setShowCreatePlaylist(true)} className="cursor-pointer">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Playlist
+            </Button>
+          </div>
+
+          {showCreatePlaylist && (
+            <div className="mb-6 p-4 bg-card/30 border border-border/30 rounded-xl">
+              <input
+                type="text"
+                placeholder="Playlist name (optional)"
+                value={newPlaylistName}
+                onChange={(e) => setNewPlaylistName(e.target.value)}
+                className="w-full bg-background border border-border/40 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 mb-3"
+                onKeyDown={(e) => e.key === 'Enter' && handleCreatePlaylist()}
+              />
+              <div className="flex gap-2">
+                <Button onClick={handleCreatePlaylist} size="sm" className="cursor-pointer">
+                  Create
+                </Button>
+                <Button onClick={() => setShowCreatePlaylist(false)} variant="outline" size="sm" className="cursor-pointer">
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {playlists.length === 0 ? (
+            <div className="text-center py-12 bg-card/20 border border-border/10 rounded-xl">
+              <p className="text-muted-foreground mb-2">No playlists yet</p>
+              <p className="text-sm text-muted-foreground/60">Create your first playlist to get started</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {playlists.map((playlist) => (
+                <Link
+                  key={playlist.id}
+                  href={`/myplaylists/${playlist.id}`}
+                  className="group relative overflow-hidden border-none bg-primary/10 hover:bg-primary/40 rounded-full transition-all duration-300 w-[150px] h-[150px] cursor-pointer p-4 flex flex-col gap-4"
+                >
+                  <div className="aspect-square w-full bg-muted/40 rounded-full flex items-center justify-center text-5xl relative shadow-md">
+
+                    <div className="space-y-1.5 px-1">
+                      <CardTitle className="text-base font-bold tracking-tight line-clamp-1 font-heading">{playlist.name}</CardTitle>
+                      <CardDescription className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                        {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
+                      </CardDescription>
+                    </div>
+
+                  </div>
+                </Link >
+              ))}
+            </div>
+          )}
+        </section>
 
         <section>
           <div className="flex items-center justify-between mb-6">
