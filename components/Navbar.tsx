@@ -61,7 +61,7 @@ const Navbar = () => {
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black">
               V
             </div>
-            <span className="text-xl font-black tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            <span className="text-xl font-black tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent font-heading">
               vibify<span className="text-primary">.</span>
             </span>
           </Link>
@@ -105,7 +105,7 @@ const Navbar = () => {
               value={theme.id}
               onValueChange={(value) => setTheme(themes.find(t => t.id === value) || themes[0])}
             >
-              <SelectTrigger className="w-[120px] bg-muted/40 border-border/50 rounded-full h-9 text-xs font-medium">
+              <SelectTrigger className="w-[120px] bg-muted/40 border-border/50 rounded-full h-9 text-xs font-medium font-heading">
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
               <SelectContent className="border-border/60 bg-popover">

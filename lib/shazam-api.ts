@@ -394,3 +394,171 @@ export function formatAppleMusicAlbum(album: AppleMusicAlbumData) {
     artist: attrs.artistName || 'Unknown',
   };
 }
+
+// Album API interfaces
+interface AlbumArtwork {
+  bgColor: string;
+  hasP3: boolean;
+  height: number;
+  textColor1: string;
+  textColor2: string;
+  textColor3: string;
+  textColor4: string;
+  url: string;
+  width: number;
+}
+
+interface EditorialNotes {
+  short: string;
+  standard: string;
+}
+
+interface AlbumAttributes {
+  artistName: string;
+  artwork: AlbumArtwork;
+  audioTraits: string[];
+  contentRating: string;
+  copyright: string;
+  editorialNotes: EditorialNotes;
+  genreNames: string[];
+  isCompilation: boolean;
+  isComplete: boolean;
+  isMasteredForItunes: boolean;
+  isPrerelease: boolean;
+  isSingle: boolean;
+  name: string;
+  playParams: {
+    id: string;
+    kind: string;
+  };
+  recordLabel: string;
+  releaseDate: string;
+  trackCount: number;
+  upc: string;
+  url: string;
+}
+
+interface TrackAttributes {
+  albumArtistName: string;
+  albumName: string;
+  artistName: string;
+  artwork: AlbumArtwork;
+  audioLocale: string;
+  audioTraits: string[];
+  composerName: string;
+  contentRating: string;
+  discNumber: number;
+  durationInMillis: number;
+  genreNames: string[];
+  hasLyrics: boolean;
+  hasTimeSyncedLyrics: boolean;
+  isAppleDigitalMaster: boolean;
+  isMasteredForItunes: boolean;
+  isVocalAttenuationAllowed: boolean;
+  isrc: string;
+  name: string;
+  playParams: {
+    id: string;
+    kind: string;
+  };
+  previews: Array<{ url: string }>;
+  releaseDate: string;
+  trackNumber: number;
+  url: string;
+}
+
+interface TrackData {
+  id: string;
+  type: string;
+  attributes: TrackAttributes;
+}
+
+interface AlbumRelationships {
+  artists: {
+    data: Array<{ id: string; type: string }>;
+  };
+  tracks: {
+    data: TrackData[];
+  };
+}
+
+export interface AlbumData {
+  id: string;
+  type: string;
+  attributes: AlbumAttributes;
+  relationships: AlbumRelationships;
+}
+
+interface AlbumResponse {
+  data: AlbumData[];
+}
+
+export async function getAlbumDetails(albumId: string): Promise<AlbumData | null> {
+  const url = `https://${SHAZAM_API_HOST}/albums/get-details?id=${albumId}&l=en-US`;
+  
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  try {
+    const response = await fetchWithFallback(url, options);
+    
+    if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('API rate limit exceeded. Please wait a moment before trying again.');
+      }
+      if (response.status === 404) {
+        throw new Error('Album not found');
+      }
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const result: any = await response.json();
+    console.log('Album details API response:', JSON.stringify(result, null, 2));
+    
+    // Handle API error responses
+    if (result.errors && Array.isArray(result.errors) && result.errors.length > 0) {
+      const error = result.errors[0];
+      if (error.status === '404' || error.code === '40400') {
+        throw new Error('Album not found');
+      }
+      throw new Error(error.detail || error.title || 'Unknown API error');
+    }
+    
+    // Handle different response structures
+    if (result.data && Array.isArray(result.data) && result.data.length > 0) {
+      return result.data[0];
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error fetching album details:', error);
+    throw error;
+  }
+}
+
+export function formatAlbumTrack(track: TrackData) {
+  const attrs = track.attributes;
+  const durationMs = attrs.durationInMillis || 0;
+  const minutes = Math.floor(durationMs / 60000);
+  const seconds = Math.floor((durationMs % 60000) / 1000);
+  const duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  
+  const coverArt = attrs.artwork?.url?.replace('{w}x{h}bb', '400x400bb') || '';
+  const previewUrl = attrs.previews?.[0]?.url || '';
+  
+  return {
+    id: track.id,
+    name: attrs.name || 'Unknown',
+    artist: attrs.artistName || 'Unknown',
+    album: attrs.albumName || 'Unknown',
+    duration,
+    trackNumber: attrs.trackNumber,
+    coverArt,
+    previewUrl,
+    url: attrs.url || '',
+  };
+}

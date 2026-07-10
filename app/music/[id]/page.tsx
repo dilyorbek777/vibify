@@ -17,6 +17,10 @@ export default function MusicPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [artistIds, setArtistIds] = useState<string[]>([])
+  const [albumId, setAlbumId] = useState<string | null>(null)
+  const [artistTopSongs, setArtistTopSongs] = useState<any[]>([])
+  const [loadingSongs, setLoadingSongs] = useState(false)
 
   useEffect(() => {
     async function fetchSong() {
@@ -77,11 +81,6 @@ export default function MusicPage() {
 
     if (params.id) fetchSong()
   }, [params.id])
-
-  const [artistIds, setArtistIds] = useState<string[]>([])
-  const [albumId, setAlbumId] = useState<string | null>(null)
-  const [artistTopSongs, setArtistTopSongs] = useState<any[]>([])
-  const [loadingSongs, setLoadingSongs] = useState(false)
 
   useEffect(() => {
     async function fetchArtistTopSongs() {
@@ -153,9 +152,9 @@ export default function MusicPage() {
           </div>
           <div className="flex-1 space-y-3 min-w-0">
 
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight truncate leading-none">{song.name}</h1>
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight truncate leading-none font-heading">{song.name}</h1>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm font-medium text-muted-foreground">
-              <span className="text-foreground font-bold text-base hover:underline cursor-pointer">{song.artist}</span>
+              <span className="text-foreground font-bold text-base hover:underline cursor-pointer font-heading">{song.artist}</span>
               <span className="text-muted-foreground/40">•</span>
               <span className="flex items-center gap-1"><Disc className="h-3.5 w-3.5" /> {song.album}</span>
               <span className="text-muted-foreground/40">•</span>
@@ -220,7 +219,7 @@ export default function MusicPage() {
 
       <main className="max-w-7xl mx-auto px-6 mt-8">
         <section className="space-y-6">
-          <h2 className="text-xl font-bold tracking-tight">More Info</h2>
+          <h2 className="text-xl font-bold tracking-tight font-heading">More Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {artistIds.map((artistId) => (
               <Link
@@ -238,7 +237,7 @@ export default function MusicPage() {
                 <div className="absolute inset-0 flex items-end p-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Artist</p>
-                    <h3 className="text-lg font-bold text-white">{song.artist}</h3>
+                    <h3 className="text-lg font-bold text-white font-heading">{song.artist}</h3>
                   </div>
                 </div>
               </Link>
@@ -258,7 +257,7 @@ export default function MusicPage() {
                 <div className="absolute inset-0 flex items-end p-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Album</p>
-                    <h3 className="text-lg font-bold text-white">{song.album}</h3>
+                    <h3 className="text-lg font-bold text-white font-heading">{song.album}</h3>
                   </div>
                 </div>
               </Link>
@@ -268,7 +267,7 @@ export default function MusicPage() {
 
         {artistTopSongs.length > 0 && (
           <section className="space-y-6 mt-12">
-            <h2 className="text-xl font-bold tracking-tight">More from {song.artist}</h2>
+            <h2 className="text-xl font-bold tracking-tight font-heading">More from {song.artist}</h2>
             <div className="space-y-1">
               {artistTopSongs.map((song, index) => (
                 <Link
@@ -291,7 +290,7 @@ export default function MusicPage() {
                     </div>
 
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-sm tracking-tight text-foreground truncate group-hover:text-primary transition-colors">
+                      <h4 className="font-bold text-sm tracking-tight text-foreground truncate group-hover:text-primary transition-colors font-heading">
                         {song.name}
                       </h4>
                       <p className="text-xs text-muted-foreground truncate mt-0.5">{song.artist}</p>

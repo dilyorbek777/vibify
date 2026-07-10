@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Inter, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { MusicPlayerProvider } from "@/contexts/MusicPlayerContext";
@@ -8,6 +8,12 @@ import { MusicPlayer } from "@/components/MusicPlayer";
 
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -71,7 +77,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${inter.variable} ${dmSans.variable} ${geistSans.variable} ${geistMono.variable}`}>
         {/* Wrap everything inside the body with your provider */}
         <ThemeProvider>
           <MusicPlayerProvider>

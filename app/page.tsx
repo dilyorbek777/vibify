@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Play, Disc, Layers, Music4, Radio, UserStar } from 'lucide-react'
+import { Play, Disc, Layers, Music4, Radio, UserStar, Heart } from 'lucide-react'
 import { searchSongs, formatShazamTrack } from '@/lib/shazam-api'
 import { getLikedSongs, getRecentlyListened } from '@/lib/local-storage'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
@@ -92,7 +92,7 @@ function HomeContent() {
           <section>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold tracking-tight">
+                <h2 className="text-2xl font-bold tracking-tight font-heading">
                   {isSearching ? 'Searching...' : `Results for "${searchQuery}"`}
                 </h2>
                 <p className="text-sm text-muted-foreground">
@@ -129,7 +129,7 @@ function HomeContent() {
                       )}
                     </div>
                     <div className="overflow-hidden">
-                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors">
+                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
                         {track.name}
                       </h4>
                       <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
@@ -141,7 +141,11 @@ function HomeContent() {
               <div className="text-center py-12">
                 <p className="text-muted-foreground">{searchError}</p>
               </div>
-            ) : null}
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No music found for "{searchQuery}"</p>
+              </div>
+            )}
           </section>
         )}
 
@@ -149,7 +153,7 @@ function HomeContent() {
           Check out our <Link href="/hover-anim" className="text-primary hover:underline font-semibold bg-primary/30 px-4 py-1 rounded-xl">Hover Animation Page</Link>
         </p>
 
-        <Button 
+        <Button
           onClick={handlePlayLikedSongs}
           disabled={likedSongs.length === 0 || isPlaying}
           className="w-full md:w-auto"
@@ -162,12 +166,37 @@ function HomeContent() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">Your Favorites</h2>
+              <h2 className="text-2xl font-bold tracking-tight font-heading">Your Favorites</h2>
               <p className="text-sm text-muted-foreground">Your favorite songs and playlists.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <Card
+              key={"Liked"}
+              className="group relative overflow-hidden border-none bg-card/30 hover:bg-card/70 transition-all duration-300 cursor-pointer rounded-xl p-4 flex flex-col gap-4"
+            >
+              <div className="aspect-square w-full bg-muted/40 rounded-lg flex items-center justify-center text-5xl relative shadow-md">
+                {/* <img src={playlist.image} alt={playlist.name} className="w-full h-full object-cover" /> */}
+                <Heart size={55} className='text-primary bg-background border-2 border-primary p-2 rounded-full' />
+                {/* Floating Action Play Button (Shadcn/Spotify signature element) */}
+                <div className="absolute bottom-3 right-3 translate-y-4 opacity-0 scale-90 group-hover:translate-y-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300">
+                  <Button asChild size="icon" className="h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-xl hover:scale-105 transition-transform">
+                    <Link href={`/liked`}>
+                      <Play className="h-5 w-5 fill-current" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 px-1">
+                <CardTitle className="text-base font-bold tracking-tight line-clamp-1 font-heading">Play your favorite songs</CardTitle>
+                <CardDescription className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                  {/* {playlist.description} <span className="text-primary flex items-center justify-start gap-2"><UserStar size={18} /> {playlist.artist}</span> */}
+                  <p><label htmlFor=""></label></p>
+                </CardDescription>
+              </div>
+            </Card>
             {likedSongs.map(playlist => (
               <Card
                 key={playlist.id}
@@ -187,7 +216,7 @@ function HomeContent() {
                 </div>
 
                 <div className="space-y-1.5 px-1">
-                  <CardTitle className="text-base font-bold tracking-tight line-clamp-1">{playlist.name}</CardTitle>
+                  <CardTitle className="text-base font-bold tracking-tight line-clamp-1 font-heading">{playlist.name}</CardTitle>
                   <CardDescription className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                     {playlist.description} <span className="text-primary flex items-center justify-start gap-2"><UserStar size={18} /> {playlist.artist}</span>
                   </CardDescription>
@@ -200,7 +229,7 @@ function HomeContent() {
         {/* Recently Played Grid List */}
         {recentlyPlayed.length > 0 && (
           <section>
-            <h2 className="text-2xl font-bold tracking-tight mb-6">Recently Played</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-6 font-heading">Recently Played</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {recentlyPlayed.slice(0, 7).map(track => (
                 <Link
@@ -216,7 +245,7 @@ function HomeContent() {
                     )}
                   </div>
                   <div className="overflow-hidden">
-                    <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors">
+                    <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
                       {track.name}
                     </h4>
                     <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
@@ -232,7 +261,7 @@ function HomeContent() {
                     <Layers className="h-6 w-6 text-primary" />
                   </div>
                   <div className="overflow-hidden">
-                    <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors">
+                    <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
                       View All
                     </h4>
                     <p className="text-xs text-muted-foreground">{recentlyPlayed.length} songs</p>
@@ -247,7 +276,7 @@ function HomeContent() {
         <section className='pb-18'>
           <div className="flex items-center gap-2 mb-6 ">
             <Layers className="h-5 w-5 text-primary" />
-            <h2 className="text-2xl font-bold tracking-tight">Explore Genres</h2>
+            <h2 className="text-2xl font-bold tracking-tight font-heading">Explore Genres</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
             {['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'R&B', 'Jazz', 'Classical', 'Country'].map((genre, index) => (

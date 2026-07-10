@@ -5,6 +5,7 @@ import { Slider } from '@/components/ui/slider'
 import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat } from 'lucide-react'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import { useEffect } from 'react'
+import Link from 'next/link'
 
 export function MusicPlayer() {
   const { currentSong, isPlaying, progress, audioUrl, volume, togglePlay, handleSeek, handleVolumeChange, playNext, playPrevious } = useMusicPlayer()
@@ -40,7 +41,7 @@ useEffect(() => {
   return (
     <footer className="fixed border-t border-border/50 bottom-0 left-0 right-0 bg-background/75 backdrop-blur-xl z-50 p-4 shadow-xl">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3 min-w-0 w-1/4 sm:flex">
+        <Link href={`/music/${currentSong.id}`} className="flex items-center gap-3 min-w-0 w-1/4 sm:flex">
           <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center shrink-0 shadow-inner overflow-hidden">
             {currentSong.image?.startsWith('http') ? (
               <img src={currentSong.image} alt={currentSong.name} className="w-full h-full object-cover" />
@@ -49,10 +50,10 @@ useEffect(() => {
             )}
           </div>
           <div className="overflow-hidden">
-            <h4 className="font-bold text-sm truncate tracking-tight">{currentSong.name}</h4>
+            <h4 className="font-bold text-sm truncate tracking-tight font-heading">{currentSong.name}</h4>
             <p className="text-xs text-muted-foreground truncate">{currentSong.artist}</p>
           </div>
-        </div>
+        </Link>
         <div className="flex-1 max-w-xl flex flex-col items-center gap-2">
           <div className="flex items-center gap-4">
             <Button onClick={playPrevious} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
