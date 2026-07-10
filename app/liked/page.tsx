@@ -2,18 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { getRecentlyListened, removeFromRecentlyListened, getViewPreference, setViewPreference } from '@/lib/local-storage'
+import { getLikedSongs, removeFromLikedSongs, getViewPreference, setViewPreference } from '@/lib/local-storage'
 import { ArrowLeft, Layers, Trash2, List, Grid3x3, Heart } from 'lucide-react'
 
-export default function RecentsPage() {
-  const [recentlyPlayed, setRecentlyPlayed] = useState<any[]>([])
+export default function LikedSongsPage() {
   const [likedSongs, setLikedSongs] = useState<any[]>([])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
 
   useEffect(() => {
-    setRecentlyPlayed(getRecentlyListened())
-
-    setLikedSongs(getRecentlyListened())
+    setLikedSongs(getLikedSongs())
     setViewMode(getViewPreference())
   }, [])
 
@@ -26,8 +23,8 @@ export default function RecentsPage() {
   const handleDelete = (e: React.MouseEvent, songId: string) => {
     e.preventDefault()
     e.stopPropagation()
-    removeFromRecentlyListened(songId)
-    setRecentlyPlayed(getRecentlyListened().filter(song => song.id !== songId))
+    removeFromLikedSongs(songId)
+    setLikedSongs(getLikedSongs().filter(song => song.id !== songId))
   }
 
   return (
@@ -40,7 +37,7 @@ export default function RecentsPage() {
           </Link>
           <div className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-primary" />
-            <h1 className="text-3xl font-bold tracking-tight">Liked Songs</h1>
+            <h1 className="text-3xl font-bold tracking-tight font-heading">Liked Songs</h1>
           </div>
 
           <button
@@ -52,15 +49,15 @@ export default function RecentsPage() {
           </button>
 
           <span className="text-sm text-muted-foreground ml-auto">
-            {recentlyPlayed.length} songs
+            {likedSongs.length} songs
           </span>
         </div>
 
         {/* Songs Grid/List */}
-        {recentlyPlayed.length > 0 ? (
+        {likedSongs.length > 0 ? (
           viewMode === 'grid' ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {recentlyPlayed.map(track => (
+              {likedSongs.map(track => (
                 <div
                   key={track.id}
                   className="group bg-card/30 hover:bg-card/70 border border-border/10 p-3 rounded-xl flex items-center gap-4 transition-all duration-200 relative"
@@ -70,14 +67,14 @@ export default function RecentsPage() {
                     className="flex items-center gap-4 flex-1"
                   >
                     <div className="h-14 w-14 rounded-md bg-muted/60 flex items-center justify-center text-2xl shrink-0 shadow-inner group-hover:scale-95 transition-transform duration-200 overflow-hidden">
-                      {track.coverArt?.startsWith('http') ? (
-                        <img src={track.coverArt} alt={track.name} className="w-full h-full object-cover" />
+                      {track.image?.startsWith('http') ? (
+                        <img src={track.image} alt={track.name} className="w-full h-full object-cover" />
                       ) : (
-                        track.image
+                        <span className="text-2xl">{track.image || '🎵'}</span>
                       )}
                     </div>
                     <div className="overflow-hidden">
-                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors">
+                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
                         {track.name}
                       </h4>
                       <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
@@ -86,7 +83,7 @@ export default function RecentsPage() {
                   <button
                     onClick={(e) => handleDelete(e, track.id)}
                     className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                    title="Remove from recently played"
+                    title="Remove from liked songs"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -95,7 +92,7 @@ export default function RecentsPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {recentlyPlayed.map(track => (
+              {likedSongs.map(track => (
                 <div
                   key={track.id}
                   className="group bg-card/30 hover:bg-card/70 border border-border/10 p-4 rounded-xl flex items-center gap-4 transition-all duration-200 relative"
@@ -105,14 +102,14 @@ export default function RecentsPage() {
                     className="flex items-center gap-4 flex-1"
                   >
                     <div className="h-12 w-12 rounded-md bg-muted/60 flex items-center justify-center text-xl shrink-0 shadow-inner overflow-hidden">
-                      {track.coverArt?.startsWith('http') ? (
-                        <img src={track.coverArt} alt={track.name} className="w-full h-full object-cover" />
+                      {track.image?.startsWith('http') ? (
+                        <img src={track.image} alt={track.name} className="w-full h-full object-cover" />
                       ) : (
-                        track.image
+                        <span className="text-xl">{track.image || '🎵'}</span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors">
+                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
                         {track.name}
                       </h4>
                       <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
@@ -121,7 +118,7 @@ export default function RecentsPage() {
                   <button
                     onClick={(e) => handleDelete(e, track.id)}
                     className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                    title="Remove from recently played"
+                    title="Remove from liked songs"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -132,8 +129,8 @@ export default function RecentsPage() {
         ) : (
           <div className="text-center py-20">
             <Layers className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No recently played songs</h3>
-            <p className="text-muted-foreground">Start listening to build your history</p>
+            <h3 className="text-xl font-semibold mb-2 font-heading">No liked songs</h3>
+            <p className="text-muted-foreground">Like songs to build your collection</p>
           </div>
         )}
       </main>

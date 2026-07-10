@@ -37,7 +37,7 @@ export default function RecentsPage() {
           </Link>
           <div className="flex items-center gap-2">
             <Layers className="h-6 w-6 text-primary" />
-            <h1 className="text-3xl font-bold tracking-tight">Recently Played</h1>
+            <h1 className="text-3xl font-bold tracking-tight font-heading">Recently Played</h1>
           </div>
 
           <button
@@ -74,7 +74,7 @@ export default function RecentsPage() {
                       )}
                     </div>
                     <div className="overflow-hidden">
-                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors">
+                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
                         {track.name}
                       </h4>
                       <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
@@ -109,7 +109,7 @@ export default function RecentsPage() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors">
+                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
                         {track.name}
                       </h4>
                       <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
@@ -129,7 +129,7 @@ export default function RecentsPage() {
         ) : (
           <div className="text-center py-20">
             <Layers className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No recently played songs</h3>
+            <h3 className="text-xl font-semibold mb-2 font-heading">No recently played songs</h3>
             <p className="text-muted-foreground">Start listening to build your history</p>
           </div>
         )}

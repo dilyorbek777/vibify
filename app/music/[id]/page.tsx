@@ -297,7 +297,7 @@ export default function MusicPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-12 text-xs font-semibold text-muted-foreground tabular-nums">
+                  <div className="flex items-center gap-12 text-xs font-semibold text-muted-foreground tabular-nums font-ui">
                     <span className="w-10 text-right pr-2">{song.duration}</span>
                   </div>
                 </Link>

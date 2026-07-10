@@ -110,7 +110,7 @@ const Navbar = () => {
               </SelectTrigger>
               <SelectContent className="border-border/60 bg-popover">
                 {themes.map(t => (
-                  <SelectItem key={t.id} value={t.id} className="text-xs">
+                  <SelectItem key={t.id} value={t.id} className="text-xs font-ui">
                     {t.name}
                   </SelectItem>
                 ))}

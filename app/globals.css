@@ -10,6 +10,7 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-dm-sans);
+  --font-ui: var(--font-montserrat);
   --color-ring: hsl(var(--ring));
   --color-border: hsl(var(--border));
   --color-destructive: hsl(var(--destructive));

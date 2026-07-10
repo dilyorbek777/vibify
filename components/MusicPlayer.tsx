@@ -66,7 +66,7 @@ useEffect(() => {
               <SkipForward className="h-4 w-4 fill-current" />
             </Button>
           </div>
-          <div className="w-full flex items-center gap-3 text-xs font-medium text-muted-foreground tabular-nums">
+          <div className="w-full flex items-center gap-3 text-xs font-medium text-muted-foreground tabular-nums font-ui">
             <span>{formatTime(progress[0])}</span>
             <Slider value={progress} onValueChange={handleSeek} className="flex-1 cursor-pointer" disabled={!audioUrl} />
             <span>{formatTime(100)}</span>

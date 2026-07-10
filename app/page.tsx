@@ -149,26 +149,23 @@ function HomeContent() {
           </section>
         )}
 
-        <p>
-          Check out our <Link href="/hover-anim" className="text-primary hover:underline font-semibold bg-primary/30 px-4 py-1 rounded-xl">Hover Animation Page</Link>
-        </p>
 
-        <Button
-          onClick={handlePlayLikedSongs}
-          disabled={likedSongs.length === 0 || isPlaying}
-          className="w-full md:w-auto"
-        >
-          <Play className="h-4 w-4 mr-2" />
-          {isPlaying ? 'Playing...' : 'Play Liked Songs'}
-        </Button>
+        <section></section>
 
-        {/* Featured Playlists Section */}
         <section>
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold tracking-tight font-heading">Your Favorites</h2>
               <p className="text-sm text-muted-foreground">Your favorite songs and playlists.</p>
             </div>
+            <Button
+              onClick={handlePlayLikedSongs}
+              disabled={likedSongs.length === 0 || isPlaying}
+              className="cursor-pointer"
+            >
+              <Play className="h-4 w-4 mr-2" />
+              {isPlaying ? 'Playing...' : 'Play Liked Songs'}
+            </Button>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -285,9 +282,15 @@ function HomeContent() {
                 variant="outline"
                 className="h-14 w-full justify-start px-4 border-border/40 bg-card/20 hover:bg-primary hover:text-primary-foreground hover:border-transparent transition-all duration-200 group rounded-xl"
               >
-                <span className="text-xs font-semibold tracking-wide">{genre}</span>
+                <span className="text-xs font-semibold tracking-wide font-ui">{genre}</span>
               </Button>
             ))}
+            <Link
+              href="/hover-anim"
+              className="h-14 flex items-center justify-center px-4 border-border/40 bg-primary/10 hover:bg-primary hover:text-primary-foreground hover:border-transparent transition-all duration-200 group rounded-xl font-semibold text-xs tracking-wide font-ui"
+            >
+              Hover Demo
+            </Link>
           </div>
         </section>
       </main>
