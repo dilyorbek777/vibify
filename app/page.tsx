@@ -372,7 +372,7 @@ function HomeContent() {
         )}
 
         {/* Categories Menu */}
-        <section className='pb-18'>
+        <section className='pb-18 z-10 relative'>
           <div className="flex items-center gap-2 mb-6 ">
             <Layers className="h-5 w-5 text-primary" />
             <h2 className="text-2xl font-bold tracking-tight font-heading">Explore Genres</h2>

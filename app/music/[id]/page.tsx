@@ -334,7 +334,7 @@ export default function MusicPage() {
       </div>
       <div className="bg-gradient-to-b from-background/40 to-background h-32" />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 mt-6 md:mt-8">
+      <main className="max-w-7xl z-10 relative mx-auto px-4 md:px-6 mt-6 md:mt-8">
         <section className="space-y-6">
           <h2 className="text-xl font-bold tracking-tight font-heading">More Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
