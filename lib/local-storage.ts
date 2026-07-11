@@ -355,3 +355,73 @@ export const updatePlaylistSongOrder = (playlistId: string, songs: PlaylistSong[
     console.error('Error updating playlist song order:', error)
   }
 }
+
+// Followed Artists
+interface FollowedArtist {
+  id: string
+  name: string
+  image: string
+  genres: string[]
+  url: string
+  verified: boolean
+  followedAt: number
+}
+
+const FOLLOWED_ARTISTS_KEY = 'vibify_followed_artists'
+
+export const getFollowedArtists = (): FollowedArtist[] => {
+  if (typeof window === 'undefined') return []
+  
+  try {
+    const data = localStorage.getItem(FOLLOWED_ARTISTS_KEY)
+    return data ? JSON.parse(data) : []
+  } catch (error) {
+    console.error('Error reading followed artists from localStorage:', error)
+    return []
+  }
+}
+
+export const isArtistFollowed = (artistId: string): boolean => {
+  const followedArtists = getFollowedArtists()
+  return followedArtists.some(artist => artist.id === artistId)
+}
+
+export const followArtist = (artist: FollowedArtist): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    const current = getFollowedArtists()
+    
+    // Check if artist already exists
+    const existingIndex = current.findIndex(a => a.id === artist.id)
+    
+    if (existingIndex === -1) {
+      // Add new artist to the front
+      const newEntry = { ...artist, followedAt: Date.now() }
+      const updated = [newEntry, ...current]
+      localStorage.setItem(FOLLOWED_ARTISTS_KEY, JSON.stringify(updated))
+    }
+  } catch (error) {
+    console.error('Error following artist:', error)
+  }
+}
+
+export const unfollowArtist = (artistId: string): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    const current = getFollowedArtists()
+    const updated = current.filter(a => a.id !== artistId)
+    localStorage.setItem(FOLLOWED_ARTISTS_KEY, JSON.stringify(updated))
+  } catch (error) {
+    console.error('Error unfollowing artist:', error)
+  }
+}
+
+export const toggleFollowArtist = (artist: FollowedArtist): void => {
+  if (isArtistFollowed(artist.id)) {
+    unfollowArtist(artist.id)
+  } else {
+    followArtist(artist)
+  }
+}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Home, Clock, ListMusic, Heart, Search, X, Clock as ClockIcon } from 'lucide-react'
+import { Home, Clock, ListMusic, Heart, Search, X, Clock as ClockIcon, Users } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -14,6 +14,7 @@ const navigation = [
   { name: 'Recents', href: '/recents', icon: Clock },
   { name: 'Playlists', href: '/myplaylists', icon: ListMusic },
   { name: 'Liked', href: '/liked', icon: Heart },
+  { name: 'Following', href: '/following', icon: Users },
 ]
 
 const MobileBottomBar = () => {

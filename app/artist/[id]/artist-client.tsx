@@ -1,16 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Play, Pause, Check, MoreHorizontal, Users, Radio, 
-  Disc, Award, Clock, Heart, Share2, Info 
+import {
+  Play, Pause, Check, MoreHorizontal, Users, Radio,
+  Disc, Award, Clock, Heart, Share2, Info
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { isArtistFollowed, toggleFollowArtist } from '@/lib/local-storage'
 
 interface ArtistClientProps {
   artist: {
@@ -63,12 +64,12 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
       {/* Dynamic Profile Cover Banner */}
       <div className="relative bg-gradient-to-b from-primary/20 via-background/60 to-background overflow-hidden border-b border-border/10">
         <div className="max-w-7xl mx-auto px-4 md:px-6 pt-12 md:pt-16 pb-8 md:pb-10 flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 relative z-10">
-          
+
           {/* Avatar Profile Frame */}
           <div className="h-40 w-40 sm:h-48 sm:w-48 md:h-56 md:w-56 rounded-full bg-card border-4 border-background/80 shadow-2xl flex items-center justify-center shrink-0 select-none bg-gradient-to-tr from-muted to-muted/20 overflow-hidden mx-auto md:mx-0">
             {artist.image.startsWith('http') ? (
-              <img 
-                src={artist.image} 
+              <img
+                src={artist.image}
                 alt={artist.name}
                 className="w-full h-full object-cover"
               />
@@ -84,7 +85,7 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
                 <Check className="h-3.5 w-3.5 stroke-[3]" /> Verified Artist
               </Badge>
             )}
-            
+
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-none text-foreground drop-shadow-sm py-1 font-heading text-center md:text-left">
               {artist.name}
             </h1>
@@ -110,12 +111,22 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
 
         <Button
           variant={isFollowing ? "outline" : "default"}
-          onClick={() => setIsFollowing(!isFollowing)}
-          className={`rounded-full px-6 font-bold h-10 border-border/60 transition-all ${
-            isFollowing 
-              ? 'border-primary/30 bg-primary/5 text-primary' 
+          onClick={() => {
+            toggleFollowArtist({
+              id: artist.id,
+              name: artist.name,
+              image: artist.image,
+              genres: artist.genres,
+              url: artist.url,
+              verified: artist.verified,
+              followedAt: Date.now()
+            })
+            setIsFollowing(!isFollowing)
+          }}
+          className={`rounded-full px-6 font-bold h-10 border-border/60 transition-all ${isFollowing
+              ? 'border-primary/30 bg-primary/5 text-primary'
               : 'bg-foreground text-background hover:bg-foreground/90'
-          }`}
+            }`}
         >
           {isFollowing ? 'Following' : 'Follow'}
         </Button>
@@ -134,8 +145,6 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
           <TabsList className="bg-muted/40 p-1 border border-border/20 rounded-xl mb-6 md:mb-8 w-full justify-start overflow-x-auto">
             <TabsTrigger value="songs" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">Popular Tracks</TabsTrigger>
-            <TabsTrigger value="albums" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">Discography</TabsTrigger>
-            <TabsTrigger value="about" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">About</TabsTrigger>
           </TabsList>
 
           {/* Songs Content Grid View */}
@@ -161,7 +170,7 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
                       <span className="group-hover:hidden">{index + 1}</span>
                       <Play className="hidden group-hover:block h-3.5 w-3.5 text-primary fill-current" />
                     </div>
-                    
+
                     <div className="h-11 w-11 rounded-md bg-muted flex items-center justify-center shrink-0 shadow-inner overflow-hidden">
                       {song.coverArt ? (
                         <img src={song.coverArt} alt={song.name} className="w-full h-full object-cover" />
@@ -210,7 +219,7 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-1 px-1">
                     <CardTitle className="text-sm font-bold tracking-tight truncate group-hover:text-primary transition-colors font-heading">{album.name}</CardTitle>
                     <CardDescription className="text-xs text-muted-foreground/80 flex items-center gap-1.5 font-medium">
