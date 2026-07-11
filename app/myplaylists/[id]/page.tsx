@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Play, Pause, Trash2, ArrowLeft, Music4 } from 'lucide-react'
-import { getPlaylists, removeSongFromPlaylist, deletePlaylist } from '@/lib/local-storage'
+import { Play, Pause, Trash2, ArrowLeft, Music4, GripVertical } from 'lucide-react'
+import { getPlaylists, removeSongFromPlaylist, deletePlaylist, updatePlaylistSongOrder } from '@/lib/local-storage'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Link from 'next/link'
 import BackgroundPattern from '@/components/BackgroundPattern'
@@ -14,6 +14,7 @@ export default function PlaylistDetailPage() {
   const { playPlaylist, isPlaying, currentSong } = useMusicPlayer()
   const [playlist, setPlaylist] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
 
   useEffect(() => {
     const playlists = getPlaylists()
@@ -55,6 +56,33 @@ export default function PlaylistDetailPage() {
     }
   }
 
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === dropIndex) return
+
+    const newSongs = [...playlist.songs]
+    const [draggedSong] = newSongs.splice(draggedIndex, 1)
+    newSongs.splice(dropIndex, 0, draggedSong)
+
+    setPlaylist({ ...playlist, songs: newSongs })
+    updatePlaylistSongOrder(playlist.id, newSongs)
+    setDraggedIndex(null)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
@@ -80,18 +108,18 @@ export default function PlaylistDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-24">
+    <div className="min-h-screen bg-background text-foreground pb-20 md:pb-24">
       <BackgroundPattern />
-      <main className="max-w-7xl mx-auto p-6 md:p-8">
+      <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 z-100 pb-20 md:pb-24">
         {/* Header */}
         <div className="mb-8">
           <Link href="/myplaylists" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4 transition-colors">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Playlists
           </Link>
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold tracking-tight font-heading mb-2">{playlist.name}</h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight font-heading mb-2">{playlist.name}</h1>
               <p className="text-muted-foreground">{playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}</p>
             </div>
             <div className="flex gap-2 shrink-0">
@@ -123,16 +151,22 @@ export default function PlaylistDetailPage() {
             <p className="text-sm text-muted-foreground/60">Add songs from the music page</p>
           </div>
         ) : (
-          <div className="space-y-1">
+          <div className="space-y-1 relative z-100" >
             {playlist.songs.map((song: any, index: number) => (
               <div
                 key={song.id}
-                className="group flex items-center justify-between p-4 rounded-xl hover:bg-card/50 transition-colors duration-150"
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragEnd={handleDragEnd}
+                className={`group flex items-center justify-between p-4 rounded-xl transition-colors duration-150 cursor-move ${
+                  draggedIndex === index ? 'bg-primary/20 border-2 border-primary' : 'hover:bg-card/50'
+                }`}
               >
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                   <div className="w-6 text-center text-sm font-semibold text-muted-foreground shrink-0 flex items-center justify-center">
-                    <span className="group-hover:hidden">{index + 1}</span>
-                    <Play className="hidden group-hover:block h-3.5 w-3.5 text-primary fill-current" />
+                    <GripVertical className="h-4 w-4 text-muted-foreground/50" />
                   </div>
 
                   <div className="h-12 w-12 rounded-md bg-muted flex items-center justify-center shrink-0 shadow-inner overflow-hidden">

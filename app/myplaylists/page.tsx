@@ -58,7 +58,7 @@ export default function Playlists() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-24">
       <BackgroundPattern />
-      <main className="max-w-7xl mx-auto p-6 md:p-8">
+      <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 pb-20 md:pb-24">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight font-heading mb-2">My Playlists</h1>

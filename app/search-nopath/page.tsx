@@ -63,7 +63,7 @@ export default function SearchPage() {
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black">
               V
             </div>
-            <span className="text-xl font-black tracking-tight hidden sm:inline">
+            <span className="text-lg sm:text-xl font-black tracking-tight hidden sm:inline">
               vibify<span className="text-primary">.</span>
             </span>
           </div>

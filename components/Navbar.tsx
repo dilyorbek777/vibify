@@ -57,7 +57,7 @@ const Navbar = () => {
      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/60 backdrop-blur-xl">
         <div className="flex items-center justify-between max-w-7xl mx-auto p-4 gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="hidden max-md:flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black">
               V
             </div>

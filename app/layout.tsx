@@ -4,7 +4,9 @@ import "./globals.css";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { MusicPlayerProvider } from "@/contexts/MusicPlayerContext";
 import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 import { MusicPlayer } from "@/components/MusicPlayer";
+import MobileBottomBar from "@/components/MobileBottomBar";
 
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -87,9 +89,13 @@ export default function RootLayout({
         {/* Wrap everything inside the body with your provider */}
         <ThemeProvider>
           <MusicPlayerProvider>
-            <Navbar />
-            {children}
-            <MusicPlayer />
+            <Sidebar />
+            <div className="lg:pl-64 pb-16 lg:pb-0">
+              <Navbar />
+              {children}
+              <MusicPlayer />
+              <MobileBottomBar />
+            </div>
           </MusicPlayerProvider>
         </ThemeProvider>
       </body>

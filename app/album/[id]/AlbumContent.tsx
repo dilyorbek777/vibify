@@ -52,11 +52,11 @@ export default function AlbumContent({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <main className="max-w-7xl mx-auto p-6 md:p-8 pb-24">
+      <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 pb-20 md:pb-24">
         {/* Album Header */}
-        <div className="flex flex-col md:flex-row gap-8 mb-12">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-8 md:mb-12">
           {/* Album Cover */}
-          <div className="w-full md:w-80 lg:w-96 shrink-0">
+          <div className="w-full md:w-72 lg:w-80 xl:w-96 shrink-0 mx-auto md:mx-0">
             <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl bg-muted/20">
               {coverArt ? (
                 <img 
@@ -85,7 +85,7 @@ export default function AlbumContent({
                   </span>
                 )}
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-heading">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight font-heading">
                 {attrs.name}
               </h1>
               <div className="flex flex-wrap items-center gap-2 text-lg text-muted-foreground">

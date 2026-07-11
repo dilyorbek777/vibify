@@ -211,6 +211,16 @@ export const toggleLikedSong = (song: LikedSong): void => {
   }
 }
 
+export const updateLikedSongsOrder = (songs: LikedSong[]): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    localStorage.setItem(LIKED_SONGS_KEY, JSON.stringify(songs))
+  } catch (error) {
+    console.error('Error updating liked songs order:', error)
+  }
+}
+
 // Playlists
 interface PlaylistSong {
   id: string
@@ -327,5 +337,21 @@ export const updatePlaylistName = (playlistId: string, name: string): void => {
     localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(playlists))
   } catch (error) {
     console.error('Error updating playlist name:', error)
+  }
+}
+
+export const updatePlaylistSongOrder = (playlistId: string, songs: PlaylistSong[]): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    const playlists = getPlaylists()
+    const playlistIndex = playlists.findIndex(p => p.id === playlistId)
+    
+    if (playlistIndex === -1) return
+    
+    playlists[playlistIndex].songs = songs
+    localStorage.setItem(PLAYLISTS_KEY, JSON.stringify(playlists))
+  } catch (error) {
+    console.error('Error updating playlist song order:', error)
   }
 }

@@ -195,8 +195,8 @@ export default function MusicPage() {
                radial-gradient(circle at 50% 50%, #${song.textColor1 || song.bgColor} 0%, transparent 70%)`
             : 'none'
         }} />
-        <div className="relative max-w-7xl mx-auto px-6 pt-12 pb-8 flex flex-col md:flex-row items-end gap-8">
-          <div className="h-64 w-64 md:h-72 md:w-72 rounded-2xl bg-card border border-border/30 flex items-center justify-center shadow-2xl shrink-0 relative group overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-4 md:px-6 pt-8 md:pt-12 pb-6 md:pb-8 flex flex-col md:flex-row items-end gap-6 md:gap-8">
+          <div className="h-48 w-48 sm:h-56 sm:w-56 md:h-64 md:w-64 lg:h-72 lg:w-72 rounded-2xl bg-card border border-border/30 flex items-center justify-center shadow-2xl shrink-0 relative group overflow-hidden mx-auto md:mx-0">
             {song.image?.startsWith('http') ? (
               <img src={song.image} alt={song.name} className="w-full h-full object-cover" />
             ) : (
@@ -205,7 +205,7 @@ export default function MusicPage() {
           </div>
           <div className="flex-1 space-y-3 min-w-0">
 
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight truncate leading-none font-heading">{song.name}</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-extrabold tracking-tight truncate leading-none font-heading">{song.name}</h1>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm font-medium text-muted-foreground">
               <span className="text-foreground font-bold text-base hover:underline cursor-pointer font-heading">{song.artist}</span>
               <span className="text-muted-foreground/40">•</span>
@@ -213,7 +213,7 @@ export default function MusicPage() {
               <span className="text-muted-foreground/40">•</span>
               <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {song.year}</span>
             </div>
-            <div className="flex flex-wrap items-center gap-4 pt-4">
+            <div className="flex flex-wrap items-center gap-3 md:gap-4 pt-3 md:pt-4">
               <Button
                 onClick={() => {
                   if (audioUrl && song) {
@@ -334,7 +334,7 @@ export default function MusicPage() {
       </div>
       <div className="bg-gradient-to-b from-background/40 to-background h-32" />
 
-      <main className="max-w-7xl mx-auto px-6 mt-8">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 mt-6 md:mt-8">
         <section className="space-y-6">
           <h2 className="text-xl font-bold tracking-tight font-heading">More Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

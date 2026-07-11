@@ -59,13 +59,13 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground select-none pb-20">
+    <div className="min-h-screen bg-background text-foreground select-none pb-20 md:pb-24">
       {/* Dynamic Profile Cover Banner */}
       <div className="relative bg-gradient-to-b from-primary/20 via-background/60 to-background overflow-hidden border-b border-border/10">
-        <div className="max-w-7xl mx-auto px-6 pt-16 pb-10 flex flex-col md:flex-row items-center md:items-end gap-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 pt-12 md:pt-16 pb-8 md:pb-10 flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 relative z-10">
           
           {/* Avatar Profile Frame */}
-          <div className="h-48 w-48 md:h-56 md:w-56 rounded-full bg-card border-4 border-background/80 shadow-2xl flex items-center justify-center shrink-0 select-none bg-gradient-to-tr from-muted to-muted/20 overflow-hidden">
+          <div className="h-40 w-40 sm:h-48 sm:w-48 md:h-56 md:w-56 rounded-full bg-card border-4 border-background/80 shadow-2xl flex items-center justify-center shrink-0 select-none bg-gradient-to-tr from-muted to-muted/20 overflow-hidden mx-auto md:mx-0">
             {artist.image.startsWith('http') ? (
               <img 
                 src={artist.image} 
@@ -85,7 +85,7 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
               </Badge>
             )}
             
-            <h1 className="text-4xl md:text-7xl font-black tracking-tight leading-none text-foreground drop-shadow-sm py-1 font-heading">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-none text-foreground drop-shadow-sm py-1 font-heading text-center md:text-left">
               {artist.name}
             </h1>
 
@@ -99,7 +99,7 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
       </div>
 
       {/* Action Core Menu Controls */}
-      <div className="max-w-7xl mx-auto px-6 py-6 flex items-center gap-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 flex items-center justify-center md:justify-start gap-3 md:gap-4">
         <Button
           onClick={() => setIsPlaying(!isPlaying)}
           size="lg"
@@ -130,12 +130,12 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
       </div>
 
       {/* Main Layout Area */}
-      <main className="max-w-7xl mx-auto px-6 mt-4">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 mt-4">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
-          <TabsList className="bg-muted/40 p-1 border border-border/20 rounded-xl mb-8">
-            <TabsTrigger value="songs" className="rounded-lg px-4 py-2 font-semibold text-sm font-ui">Popular Tracks</TabsTrigger>
-            <TabsTrigger value="albums" className="rounded-lg px-4 py-2 font-semibold text-sm font-ui">Discography</TabsTrigger>
-            <TabsTrigger value="about" className="rounded-lg px-4 py-2 font-semibold text-sm font-ui">About</TabsTrigger>
+          <TabsList className="bg-muted/40 p-1 border border-border/20 rounded-xl mb-6 md:mb-8 w-full justify-start overflow-x-auto">
+            <TabsTrigger value="songs" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">Popular Tracks</TabsTrigger>
+            <TabsTrigger value="albums" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">Discography</TabsTrigger>
+            <TabsTrigger value="about" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">About</TabsTrigger>
           </TabsList>
 
           {/* Songs Content Grid View */}

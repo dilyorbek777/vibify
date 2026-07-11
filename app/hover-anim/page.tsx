@@ -226,7 +226,7 @@ export default function HoverAnimPage() {
 
     return (
         <main
-            className="relative min-h-screen w-full overflow-hidden bg-[#050507] flex items-center justify-center"
+            className="relative min-h-screen w-full overflow-hidden bg-[#050507] flex items-center justify-center pb-16 md:pb-0"
             onMouseMove={(e) => setCursorPosition({ x: e.clientX, y: e.clientY })}
         >
             {/* loading state */}
@@ -273,8 +273,8 @@ export default function HoverAnimPage() {
                     style={{
                         top: cursorPosition.y + 20,
                         left: cursorPosition.x + 20,
-                        width: 280,
-                        height: 400,
+                        width: Math.min(280, window.innerWidth - 40),
+                        height: Math.min(400, window.innerHeight - 100),
                         boxShadow: `
       0 0 0 1px ${hoveredBgTileData.color}25, 
       0 20px 40px rgba(0,0,0,0.6), 

@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { getLikedSongs, removeFromLikedSongs, getViewPreference, setViewPreference } from '@/lib/local-storage'
-import { ArrowLeft, Layers, Trash2, List, Grid3x3, Heart } from 'lucide-react'
+import { getLikedSongs, removeFromLikedSongs, getViewPreference, setViewPreference, updateLikedSongsOrder } from '@/lib/local-storage'
+import { ArrowLeft, Layers, Trash2, List, Grid3x3, Heart, GripVertical } from 'lucide-react'
 import BackgroundPattern from '@/components/BackgroundPattern'
 
 export default function LikedSongsPage() {
   const [likedSongs, setLikedSongs] = useState<any[]>([])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
 
   useEffect(() => {
     setLikedSongs(getLikedSongs())
@@ -28,10 +29,37 @@ export default function LikedSongsPage() {
     setLikedSongs(getLikedSongs().filter(song => song.id !== songId))
   }
 
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === dropIndex) return
+
+    const newSongs = [...likedSongs]
+    const [draggedSong] = newSongs.splice(draggedIndex, 1)
+    newSongs.splice(dropIndex, 0, draggedSong)
+
+    setLikedSongs(newSongs)
+    updateLikedSongsOrder(newSongs)
+    setDraggedIndex(null)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 relative">
       <BackgroundPattern />
-      <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-8 pb-24">
+      <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8 pb-20 md:pb-24">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link href="/" className="p-2 rounded-full hover:bg-card/50 transition-colors">
@@ -94,11 +122,21 @@ export default function LikedSongsPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {likedSongs.map(track => (
+              {likedSongs.map((track, index) => (
                 <div
                   key={track.id}
-                  className="group bg-card/30 hover:bg-card/70 border border-border/10 p-4 rounded-xl flex items-center gap-4 transition-all duration-200 relative"
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={`group bg-card/30 hover:bg-card/70 border border-border/10 p-4 rounded-xl flex items-center gap-4 transition-all duration-200 relative cursor-move ${
+                    draggedIndex === index ? 'bg-primary/20 border-2 border-primary' : ''
+                  }`}
                 >
+                  <div className="w-6 text-center text-sm font-semibold text-muted-foreground shrink-0 flex items-center justify-center">
+                    <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+                  </div>
                   <Link
                     href={`/music/${track.id}`}
                     className="flex items-center gap-4 flex-1"

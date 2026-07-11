@@ -14,7 +14,7 @@ import BackgroundPattern from '@/components/BackgroundPattern'
 // 1. Change this from default export to a regular function named HomeContent
 function HomeContent() {
   const searchParams = useSearchParams()
-  const { playPlaylist, isPlaying } = useMusicPlayer()
+  const { playPlaylist, isPlaying, currentSong } = useMusicPlayer()
   const queryParam = searchParams.get('q') || ''
   const [searchQuery, setSearchQuery] = useState(queryParam)
   const [searchResults, setSearchResults] = useState<any[]>([])
@@ -83,6 +83,11 @@ function HomeContent() {
     setShowCreatePlaylist(false)
   }, [newPlaylistName, playlists])
 
+  const isPlaylistPlaying = (playlist: any) => {
+    if (!isPlaying || !currentSong) return false
+    return playlist.songs.some((song: any) => song.id === currentSong.id)
+  }
+
   useEffect(() => {
     const timer = setTimeout(() => {
       handleSearch(searchQuery)
@@ -99,7 +104,7 @@ function HomeContent() {
 
 
       {/* Main Layout View */}
-      <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-12 z-10 pb-24">
+      <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 space-y-8 md:space-y-12 z-100 pb-20 md:pb-24">
 
         {/* Search Results Section */}
         {searchQuery && (
@@ -169,7 +174,7 @@ function HomeContent() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold tracking-tight font-heading">Your Playlists</h2>
-              <p className="text-sm text-muted-foreground">Create and manage your playlists.</p>
+              <p className="text-sm text-muted-foreground max-md:hidden">Create and manage your playlists.</p>
             </div>
             <Button onClick={() => setShowCreatePlaylist(true)} className="cursor-pointer">
               <Plus className="h-4 w-4 mr-2" />
@@ -201,28 +206,50 @@ function HomeContent() {
           {playlists.length === 0 ? (
             <div className="text-center py-12 bg-card/20 border border-border/10 rounded-xl">
               <p className="text-muted-foreground mb-2">No playlists yet</p>
-              <p className="text-sm text-muted-foreground/60">Create your first playlist to get started</p>
+              <p className="text-sm text-muted-foreground/60 ">Create your first playlist to get started</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {playlists.map((playlist) => (
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
+              {playlists.slice(-4).reverse().map((playlist) => (
                 <Link
                   key={playlist.id}
                   href={`/myplaylists/${playlist.id}`}
                   className="group relative overflow-hidden border-none bg-primary/10 hover:bg-primary/40 rounded-full transition-all duration-300 w-[150px] h-[150px] cursor-pointer p-4 flex flex-col gap-4"
                 >
-                  <div className="aspect-square w-full bg-muted/40 rounded-full flex items-center justify-center text-5xl relative shadow-md">
-
-                    <div className="space-y-1.5 px-1">
-                      <CardTitle className="text-base font-bold tracking-tight line-clamp-1 font-heading">{playlist.name}</CardTitle>
-                      <CardDescription className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                  <div className={`aspect-square overflow-hidden  w-full relative bg-background/80 border-primary border-2 rounded-full flex items-center justify-center text-5xl relative shadow-md ${isPlaylistPlaying(playlist) ? 'animate-spin ' : ''}`} style={isPlaylistPlaying(playlist) ? { animationDuration: '3s' } : undefined}>
+                    {playlist.songs.length > 0 && playlist.songs[0].image?.startsWith('http') ? (
+                      <img src={playlist.songs[0].image} alt={playlist.name} className="w-full absolute h-full object-cover" />
+                    ) : (
+                      <Music4 size={55} className='text-primary' />
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 rounded-b-full backdrop-blur-sm p-2 text-center">
+                      <CardTitle className="text-sm font-bold tracking-tight line-clamp-1 font-heading text-white">{playlist.name}</CardTitle>
+                      <CardDescription className="text-xs text-white/80 line-clamp-1 leading-relaxed">
                         {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
                       </CardDescription>
                     </div>
-
                   </div>
+                  
                 </Link >
               ))}
+
+              <Link
+                key={"playlists"}
+                href={`/myplaylists`}
+                className="group relative overflow-hidden border-none bg-primary/10 hover:bg-primary/40 rounded-full transition-all duration-300 w-[150px] h-[150px] cursor-pointer p-4 flex flex-col gap-4"
+              >
+                <div className={`aspect-square w-full bg-background/80 border-primary border-2 rounded-full flex items-center justify-center text-5xl relative shadow-md `}>
+
+
+                  <div className="space-y-1.5 px-1">
+                    <CardTitle className="text-base font-bold tracking-tight line-clamp-1 font-heading">See all</CardTitle>
+                    <CardDescription className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                      My playlists
+                    </CardDescription>
+                  </div>
+
+                </div>
+              </Link >
             </div>
           )}
         </section>
@@ -231,7 +258,7 @@ function HomeContent() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold tracking-tight font-heading">Your Favorites</h2>
-              <p className="text-sm text-muted-foreground">Your favorite songs and playlists.</p>
+              <p className="text-sm text-muted-foreground max-md:hidden">Your favorite songs and playlists.</p>
             </div>
             <Button
               onClick={handlePlayLikedSongs}
@@ -300,14 +327,14 @@ function HomeContent() {
 
         {/* Recently Played Grid List */}
         {recentlyPlayed.length > 0 && (
-          <section>
+          <section className='z-10'>
             <h2 className="text-2xl font-bold tracking-tight mb-6 font-heading">Recently Played</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {recentlyPlayed.slice(0, 7).map(track => (
                 <Link
                   key={track.id}
                   href={`/music/${track.id}`}
-                  className="group bg-card/30 hover:bg-card/70 border border-border/10 p-3 rounded-xl flex items-center gap-4 cursor-pointer transition-all duration-200"
+                  className="group bg-card/30 z-10 hover:bg-card/70 border border-border/10 p-3 rounded-xl flex items-center gap-4 cursor-pointer transition-all duration-200"
                 >
                   <div className="h-14 w-14 rounded-md bg-muted/60 flex items-center justify-center text-2xl shrink-0 shadow-inner group-hover:scale-95 transition-transform duration-200 overflow-hidden">
                     {track.coverArt?.startsWith('http') ? (
