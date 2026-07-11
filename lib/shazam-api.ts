@@ -58,9 +58,14 @@ function getFallbackApiKey(): string {
   return process.env.NEXT_PUBLIC_RAPIDAPI_KEY2 || '';
 }
 
+function getThirdApiKey(): string {
+  return process.env.NEXT_PUBLIC_RAPIDAPI_KEY3 || '';
+}
+
 async function fetchWithFallback(url: string, options: RequestInit): Promise<Response> {
   const firstKey = getApiKey();
   const fallbackKey = getFallbackApiKey();
+  const thirdKey = getThirdApiKey();
 
   const makeRequest = async (apiKey: string) => {
     const requestOptions = {
@@ -79,6 +84,14 @@ async function fetchWithFallback(url: string, options: RequestInit): Promise<Res
   if (!response.ok && response.status === 429 && fallbackKey) {
     console.log('Primary API key quota exceeded, trying fallback key');
     response = await makeRequest(fallbackKey);
+
+    if (!response.ok && response.status === 429 && thirdKey) {
+      console.log('Fallback API key quota exceeded, trying third key');
+      response = await makeRequest(thirdKey);
+    }
+  } else if (!response.ok && response.status === 429 && !fallbackKey && thirdKey) {
+    console.log('Primary API key quota exceeded and no fallback key, trying third key');
+    response = await makeRequest(thirdKey);
   }
 
   return response;
