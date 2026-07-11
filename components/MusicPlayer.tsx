@@ -39,7 +39,7 @@ useEffect(() => {
   }
 
   return (
-    <footer className="fixed border-t border-border/50 bottom-0 left-0 right-0 bg-background/75 backdrop-blur-xl z-50 p-4 shadow-xl">
+    <footer className="fixed max-md:bottom-14 border-t border-border/50 bottom-0 left-0 right-0 bg-background/75 backdrop-blur-xl z-50 p-4 shadow-xl">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         <Link href={`/music/${currentSong.id}`} className="flex items-center gap-3 min-w-0 w-1/4 sm:flex">
           <div className="h-12 w-12 rounded-lg bg-muted flex items-center justify-center shrink-0 shadow-inner overflow-hidden">
