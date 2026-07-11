@@ -18,7 +18,7 @@ const Sidebar = () => {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 flex-col border-r border-border/40 bg-background/80 backdrop-blur-xl z-40">
+    <aside className="hidden font-heading lg:flex fixed left-0 top-0 bottom-0 w-64 flex-col border-r border-border/40 bg-background/80 backdrop-blur-xl z-40">
       {/* Logo */}
       <div className="p-6 border-b border-border/20">
         <Link href="/" className="flex items-center gap-2">

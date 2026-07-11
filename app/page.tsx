@@ -296,7 +296,7 @@ function HomeContent() {
                 </CardDescription>
               </div>
             </Card>
-            {likedSongs.map(playlist => (
+            {likedSongs.reverse().slice(-3).map(playlist => (
               <Card
                 key={playlist.id}
                 className="group relative overflow-hidden border-none bg-card/30 hover:bg-card/70 transition-all duration-300 cursor-pointer rounded-xl p-4 flex flex-col gap-4"

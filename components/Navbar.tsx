@@ -67,7 +67,7 @@ const Navbar = () => {
           </Link>
 
           {/* Search Bar Wrapper */}
-          <div ref={searchRef} className="relative flex-1 max-w-md hidden sm:block">
+          <div ref={searchRef} className="relative font-sans flex-1 max-w-md hidden sm:block">
             <form onSubmit={handleSearch}>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
               <Input
