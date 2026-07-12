@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuItem, DropdownMenuHeader, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Toast } from '@/components/ui/toast'
@@ -45,6 +45,13 @@ export default function MusicPage() {
 
         const attrs = trackData?.attributes || trackData
         console.log('Attributes:', attrs)
+
+        // Check if valid song data exists
+        if (!attrs || (!attrs.name && !attrs.title)) {
+          console.log('Invalid song data, triggering not found')
+          notFound()
+          return
+        }
 
         const audioUrl = attrs?.previews?.[0]?.url || attrs?.playParams?.[0]?.url || attrs?.previewUrl || attrs?.url || null
         console.log('Audio URL:', audioUrl)
@@ -166,14 +173,7 @@ export default function MusicPage() {
   }
 
   if (error || !song) {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500 mb-4">{error || 'Song not found'}</p>
-          <Button onClick={() => window.history.back()}>Go Back</Button>
-        </div>
-      </div>
-    )
+    notFound()
   }
 
   return (

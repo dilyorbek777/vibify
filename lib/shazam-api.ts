@@ -97,8 +97,8 @@ async function fetchWithFallback(url: string, options: RequestInit): Promise<Res
   return response;
 }
 
-export async function searchSongs(query: string, limit: number = 10): Promise<ShazamSong[]> {
-  const url = `https://${SHAZAM_API_HOST}/v2/search?term=${encodeURIComponent(query)}&locale=en-US&offset=0&limit=${limit}`;
+export async function searchSongs(query: string, limit: number = 10, offset: number = 0): Promise<ShazamSong[]> {
+  const url = `https://${SHAZAM_API_HOST}/v2/search?term=${encodeURIComponent(query)}&locale=en-US&offset=${offset}&limit=${limit}`;
   
   const options = {
     method: 'GET',

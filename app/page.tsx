@@ -10,6 +10,7 @@ import { getLikedSongs, getRecentlyListened, getPlaylists, createPlaylist } from
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Link from 'next/link'
 import BackgroundPattern from '@/components/BackgroundPattern'
+import { MoodCategoriesSection } from '@/components/moodCategories'
 
 // 1. Change this from default export to a regular function named HomeContent
 function HomeContent() {
@@ -25,6 +26,8 @@ function HomeContent() {
   const [playlists, setPlaylists] = useState<any[]>([])
   const [showCreatePlaylist, setShowCreatePlaylist] = useState(false)
   const [newPlaylistName, setNewPlaylistName] = useState('')
+  const [suggestedMusic, setSuggestedMusic] = useState<any[]>([])
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false)
 
   useEffect(() => {
     setSearchQuery(queryParam)
@@ -34,6 +37,32 @@ function HomeContent() {
     setRecentlyPlayed(getRecentlyListened())
     setLikedSongs(getLikedSongs())
     setPlaylists(getPlaylists())
+  }, [])
+
+  useEffect(() => {
+    // Fetch random suggestions when all data is empty
+    const hasNoData = likedSongs.length === 0 && recentlyPlayed.length === 0 && playlists.length === 0
+
+    if (hasNoData && suggestedMusic.length === 0 && !isLoadingSuggestions) {
+      fetchRandomSuggestions()
+    }
+  }, [likedSongs, recentlyPlayed, playlists, suggestedMusic, isLoadingSuggestions])
+
+  const fetchRandomSuggestions = useCallback(async () => {
+    setIsLoadingSuggestions(true)
+
+    const randomTerms = ['top hits', 'popular music', 'trending songs', 'best songs', 'chart toppers']
+    const randomTerm = randomTerms[Math.floor(Math.random() * randomTerms.length)]
+
+    try {
+      const tracks = await searchSongs(randomTerm, 8)
+      const formattedTracks = tracks.map(formatShazamTrack)
+      setSuggestedMusic(formattedTracks)
+    } catch (error) {
+      console.error('Error fetching suggestions:', error)
+    } finally {
+      setIsLoadingSuggestions(false)
+    }
   }, [])
 
   const handleSearch = useCallback(async (query: string) => {
@@ -106,6 +135,64 @@ function HomeContent() {
       {/* Main Layout View */}
       <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 space-y-8 md:space-y-12 z-100 pb-20 md:pb-24">
 
+        {/* Suggested Music Section - shown when no data in localStorage */}
+        {!searchQuery && likedSongs.length === 0 && recentlyPlayed.length === 0 && playlists.length === 0 && (
+          <section className='z-10 relative'>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight font-heading">
+                  {isLoadingSuggestions ? 'Loading suggestions...' : 'Suggested for You'}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {isLoadingSuggestions ? 'Finding great music' : suggestedMusic.length > 0 ? `Discover ${suggestedMusic.length} songs` : 'Start exploring music'}
+                </p>
+              </div>
+            </div>
+
+            {isLoadingSuggestions ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-card/30 border border-border/10 p-3 rounded-xl flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-md bg-muted/60 animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-muted/60 rounded animate-pulse" />
+                      <div className="h-3 bg-muted/60 rounded w-2/3 animate-pulse" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : suggestedMusic.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {suggestedMusic.map((track) => (
+                  <Link
+                    key={track.id}
+                    href={`/music/${track.id}`}
+                    className="group bg-card/30 hover:bg-card/70 border border-border/10 p-3 rounded-xl flex items-center gap-4 cursor-pointer transition-all duration-200"
+                  >
+                    <div className="h-14 w-14 rounded-md bg-muted/60 flex items-center justify-center text-2xl shrink-0 shadow-inner group-hover:scale-95 transition-transform duration-200 overflow-hidden">
+                      {track.coverArt ? (
+                        <img src={track.coverArt} alt={track.name} className="w-full h-full object-cover" />
+                      ) : (
+                        track.image
+                      )}
+                    </div>
+                    <div className="overflow-hidden">
+                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
+                        {track.name}
+                      </h4>
+                      <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Unable to load suggestions. Try searching for music.</p>
+              </div>
+            )}
+          </section>
+        )}
+
         {/* Search Results Section */}
         {searchQuery && (
           <section className='z-10 relative'>
@@ -168,6 +255,7 @@ function HomeContent() {
           </section>
         )}
 
+        <MoodCategoriesSection />
 
         {/* Playlists Section */}
         <section>
@@ -229,7 +317,7 @@ function HomeContent() {
                       </CardDescription>
                     </div>
                   </div>
-                  
+
                 </Link >
               ))}
 
@@ -378,21 +466,20 @@ function HomeContent() {
             <h2 className="text-2xl font-bold tracking-tight font-heading">Explore Genres</h2>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
-            {['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'R&B', 'Jazz', 'Classical', 'Country'].map((genre, index) => (
-              <Button
+            {['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'R&B', 'Jazz', 'Classical', 'Country'].map((genre) => (
+              <Link
                 key={genre}
-                variant="outline"
-                className="h-14 w-full justify-start px-4 border-border/40 bg-card/20 hover:bg-primary hover:text-primary-foreground hover:border-transparent transition-all duration-200 group rounded-xl"
+                href={`/genre/${encodeURIComponent(genre.toLowerCase())}`}
               >
-                <span className="text-xs font-semibold tracking-wide font-ui">{genre}</span>
-              </Button>
+                <Button
+                  variant="outline"
+                  className="h-14 w-full justify-start px-4 border-border/40 bg-card/20 hover:bg-primary hover:text-primary-foreground hover:border-transparent transition-all duration-200 group rounded-xl cursor-pointer"
+                >
+                  <span className="text-xs font-semibold tracking-wide font-ui">{genre}</span>
+                </Button>
+              </Link>
             ))}
-            <Link
-              href="/hover-anim"
-              className="h-14 flex items-center justify-center px-4 border-border/40 bg-primary/10 hover:bg-primary hover:text-primary-foreground hover:border-transparent transition-all duration-200 group rounded-xl font-semibold text-xs tracking-wide font-ui"
-            >
-              Hover Demo
-            </Link>
+
           </div>
         </section>
       </main>

@@ -425,3 +425,113 @@ export const toggleFollowArtist = (artist: FollowedArtist): void => {
     followArtist(artist)
   }
 }
+
+// Genre Songs Caching
+interface GenreSong {
+  id: string
+  name: string
+  artist: string
+  album: string
+  image: string
+  coverArt: string
+  duration: string
+  url: string
+}
+
+interface GenreCache {
+  genre: string
+  songs: GenreSong[]
+  lastUpdated: number
+}
+
+const GENRE_CACHE_KEY = 'vibify_genre_cache'
+
+export const getGenreSongs = (genre: string): GenreSong[] => {
+  if (typeof window === 'undefined') return []
+  
+  try {
+    const data = localStorage.getItem(GENRE_CACHE_KEY)
+    if (!data) return []
+    
+    const cache: GenreCache[] = JSON.parse(data)
+    const genreCache = cache.find(c => c.genre.toLowerCase() === genre.toLowerCase())
+    
+    return genreCache ? genreCache.songs : []
+  } catch (error) {
+    console.error('Error reading genre songs from localStorage:', error)
+    return []
+  }
+}
+
+export const setGenreSongs = (genre: string, songs: GenreSong[]): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    const data = localStorage.getItem(GENRE_CACHE_KEY)
+    const cache: GenreCache[] = data ? JSON.parse(data) : []
+    
+    const existingIndex = cache.findIndex(c => c.genre.toLowerCase() === genre.toLowerCase())
+    
+    if (existingIndex !== -1) {
+      // Update existing genre cache
+      cache[existingIndex] = {
+        genre,
+        songs,
+        lastUpdated: Date.now()
+      }
+    } else {
+      // Add new genre cache
+      cache.push({
+        genre,
+        songs,
+        lastUpdated: Date.now()
+      })
+    }
+    
+    localStorage.setItem(GENRE_CACHE_KEY, JSON.stringify(cache))
+  } catch (error) {
+    console.error('Error writing genre songs to localStorage:', error)
+  }
+}
+
+export const addGenreSongs = (genre: string, newSongs: GenreSong[]): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    const existingSongs = getGenreSongs(genre)
+    const combinedSongs = [...existingSongs, ...newSongs]
+    
+    // Remove duplicates based on song ID
+    const uniqueSongs = combinedSongs.filter((song, index, self) =>
+      index === self.findIndex(s => s.id === song.id)
+    )
+    
+    // Limit to 25 songs max
+    const limitedSongs = uniqueSongs.slice(0, 25)
+    
+    setGenreSongs(genre, limitedSongs)
+  } catch (error) {
+    console.error('Error adding genre songs to localStorage:', error)
+  }
+}
+
+export const clearGenreCache = (genre?: string): void => {
+  if (typeof window === 'undefined') return
+  
+  try {
+    if (genre) {
+      // Clear specific genre
+      const data = localStorage.getItem(GENRE_CACHE_KEY)
+      if (data) {
+        const cache: GenreCache[] = JSON.parse(data)
+        const updated = cache.filter(c => c.genre.toLowerCase() !== genre.toLowerCase())
+        localStorage.setItem(GENRE_CACHE_KEY, JSON.stringify(updated))
+      }
+    } else {
+      // Clear all genre cache
+      localStorage.removeItem(GENRE_CACHE_KEY)
+    }
+  } catch (error) {
+    console.error('Error clearing genre cache:', error)
+  }
+}

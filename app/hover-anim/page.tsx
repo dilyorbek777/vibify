@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Bebas_Neue, Inter } from 'next/font/google';
 import { Card, CardContent } from '@/components/ui/card';
 import { Hash, Palette } from 'lucide-react';
+import Link from 'next/link';
 
 const bebas = Bebas_Neue({ subsets: ['latin'], weight: '400' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600'] });
@@ -101,7 +102,7 @@ export function extractCardInfo(response: SpotifyBrowseResponse): NormalizedCard
 
     for (const section of sectionItems) {
         if (!section?.sectionItems?.items) continue;
-        
+
         for (const item of section.sectionItems.items) {
             const content = item.content;
 
@@ -245,7 +246,8 @@ export default function HoverAnimPage() {
                 style={{ gridTemplateColumns: `repeat(${BG_COLS}, 1fr)` }}
             >
                 {flatTiles.map((t, i) => (
-                    <div
+                    <Link 
+                        href={`/?q=${t.title}`}
                         key={i}
                         style={{
                             opacity: hoveredBgTile === t.id ? 1 : t.opacity,
@@ -262,13 +264,14 @@ export default function HoverAnimPage() {
                             alt={t.title}
                             className="w-full h-full object-cover"
                         />
-                    </div>
+                    </Link>
                 ))}
             </div>
 
             {/* info card for background tiles */}
             {hoveredBgTileData && (
-                <Card
+                <Link
+                    href={`/music/${hoveredBgTileData.title}`}
                     className="absolute z-30 rounded-xl overflow-hidden transition-all duration-200 ease-out pointer-events-none will-change-transform border-white/10 backdrop-blur-md"
                     style={{
                         top: cursorPosition.y + 20,
@@ -336,7 +339,7 @@ export default function HoverAnimPage() {
                             </div>
                         </div>
                     </CardContent>
-                </Card>
+                </Link>
             )}
         </main>
     );
