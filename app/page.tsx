@@ -343,7 +343,7 @@ function HomeContent() {
         </section>
 
         <section>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between z-10 relative mb-6">
             <div>
               <h2 className="text-2xl font-bold tracking-tight font-heading">Your Favorites</h2>
               <p className="text-sm text-muted-foreground max-md:hidden">Your favorite songs and playlists.</p>
