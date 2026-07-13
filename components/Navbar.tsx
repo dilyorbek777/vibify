@@ -10,6 +10,7 @@ import { themes } from "@/constants"
 import { useTheme } from "@/contexts/theme-context"
 import Link from "next/link"
 import { getSearchHistory, addSearchToHistory } from "@/lib/local-storage"
+import { MusicDetectButton } from "./MusicDetectButton"
 
 const Navbar = () => {
   const router = useRouter()
@@ -101,6 +102,8 @@ const Navbar = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
+            <MusicDetectButton />
+            
             <Select
               value={theme.id}
               onValueChange={(value) => setTheme(themes.find(t => t.id === value) || themes[0])}

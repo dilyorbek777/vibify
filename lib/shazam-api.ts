@@ -575,3 +575,128 @@ export function formatAlbumTrack(track: TrackData) {
     url: attrs.url || '',
   };
 }
+
+// Music Detection API
+interface DetectResponse {
+  results?: {
+    matches?: Array<{
+      id: string
+      type: string
+    }>
+  }
+  resources?: {
+    'shazam-songs'?: {
+      [key: string]: {
+        id: string
+        type: string
+        attributes: {
+          title: string
+          artist: string
+          primaryArtist: string
+          label: string
+          explicit: boolean
+          isrc: string
+          webUrl: string
+          images: {
+            coverArt: string
+            coverArtHq: string
+            artistAvatar: string
+          }
+          artwork: {
+            url: string
+            textColor1: string
+            textColor2: string
+            textColor3: string
+            textColor4: string
+            bgColor: string
+          }
+          share: {
+            subject: string
+            text: string
+            image: string
+            html: string
+          }
+          genres: {
+            primary: string
+          }
+          streaming: {
+            preview: string
+          }
+        }
+        relationships: {
+          artists: {
+            data: Array<{ id: string; type: string }>
+          }
+          albums: {
+            data: Array<{ id: string; type: string }>
+          }
+        }
+      }
+    }
+    artists?: {
+      [key: string]: {
+        id: string
+        attributes: {
+          name: string
+          artwork: {
+            url: string
+            textColor1: string
+            textColor2: string
+            textColor3: string
+            textColor4: string
+            bgColor: string
+          }
+        }
+      }
+    }
+    albums?: {
+      [key: string]: {
+        id: string
+        attributes: {
+          name: string
+          artistName: string
+          releaseDate: string
+        }
+      }
+    }
+  }
+  meta?: {
+    timestamp: number
+    timezone: string
+    tagId: string
+  }
+}
+
+export async function detectSong(audioData: string): Promise<DetectResponse | null> {
+  const url = 'https://shazam.p.rapidapi.com/songs/v3/detect?timezone=America%2FChicago&locale=en-US';
+  
+  const options = {
+    method: 'POST',
+    headers: {
+      'x-rapidapi-key': getApiKey(),
+      'x-rapidapi-host': SHAZAM_API_HOST,
+      'Content-Type': 'text/plain'
+    },
+    body: audioData
+  };
+
+  try {
+    const response = await fetchWithFallback(url, options);
+    
+    if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('API rate limit exceeded. Please wait a moment before trying again.');
+      }
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const result: DetectResponse = await response.json();
+    console.log('Detection API response:', JSON.stringify(result, null, 2));
+    
+    // Return the full response for localStorage
+    return result;
+  } catch (error) {
+    console.error('Error detecting song:', error);
+    throw error;
+  }
+}

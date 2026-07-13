@@ -1,0 +1,23 @@
+create a button which is shown in every page using navbar when it's pressed, access a devices mic in order to get Encoded base64 string of byte[] that generated from raw data less than 500KB (3-5 seconds sample are good enough for detection). The raw sound data must be 44100Hz, 1 channel (Mono), signed 16 bit PCM little endian. Other types of media are NOT supported, such as : mp3, wav, etc... or need to be converted to uncompressed raw data. 
+
+and it's for music detection
+
+the api usage: 
+const url = 'https://shazam.p.rapidapi.com/songs/v3/detect?timezone=America%2FChicago&locale=en-US';
+const options = {
+	method: 'POST',
+	headers: {
+		'x-rapidapi-key': 'keyin .env file ',
+		'x-rapidapi-host': 'shazam.p.rapidapi.com',
+		'Content-Type': 'text/plain'
+	},
+	body: 'Generate one on your own for testing and send the body with the content-type as text/plain'
+};
+
+try {
+	const response = await fetch(url, options);
+	const result = await response.text();
+	console.log(result);
+} catch (error) {
+	console.error(error);
+}

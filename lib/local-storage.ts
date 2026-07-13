@@ -535,3 +535,66 @@ export const clearGenreCache = (genre?: string): void => {
     console.error('Error clearing genre cache:', error)
   }
 }
+
+// Detected Songs
+export interface DetectedSong {
+  id: string
+  timestamp: number
+  response: any
+}
+
+export const getDetectedSongs = (): DetectedSong[] => {
+  if (typeof window === 'undefined') return []
+  const key = 'vibify_detected_songs'
+  const data = localStorage.getItem(key)
+  if (!data) return []
+  try {
+    return JSON.parse(data)
+  } catch {
+    return []
+  }
+}
+
+export const addDetectedSong = (response: any): DetectedSong => {
+  const detectedSongs = getDetectedSongs()
+  
+  // Extract song ID from response - use songs ID from relationships instead of shazam-songs ID
+  const matches = response?.results?.matches || []
+  let songId = Date.now().toString()
+  
+  if (matches.length > 0) {
+    const shazamSongId = matches[0].id
+    const shazamSongData = response?.resources?.['shazam-songs']?.[shazamSongId]
+    const songsRelationship = shazamSongData?.relationships?.songs?.data
+    
+    if (songsRelationship && songsRelationship.length > 0) {
+      songId = songsRelationship[0].id
+    } else {
+      songId = shazamSongId
+    }
+  }
+  
+  const detectedSong: DetectedSong = {
+    id: songId,
+    timestamp: Date.now(),
+    response
+  }
+  
+  // Add to beginning of array (most recent first)
+  detectedSongs.unshift(detectedSong)
+  
+  // Keep only last 20 detections
+  if (detectedSongs.length > 20) {
+    detectedSongs.pop()
+  }
+  
+  const key = 'vibify_detected_songs'
+  localStorage.setItem(key, JSON.stringify(detectedSongs))
+  
+  return detectedSong
+}
+
+export const getLatestDetectedSong = (): DetectedSong | null => {
+  const detectedSongs = getDetectedSongs()
+  return detectedSongs.length > 0 ? detectedSongs[0] : null
+}

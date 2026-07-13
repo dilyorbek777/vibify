@@ -786,3 +786,218 @@ export default function Home() {
 }
 
 but still got the same error
+
+
+
+
+
+
+
+forward-logs-shared.ts:95 Detection API response: {
+  "results": {
+    "matches": [
+      {
+        "id": "281565895",
+        "type": "shazam-songs"
+      }
+    ],
+    "retry": {
+      "recordingIntermissionInMilliseconds": 0
+    }
+  },
+  "resources": {
+    "artist-highlights": {
+      "464296584": {
+        "id": "464296584",
+        "type": "artist-highlights"
+      }
+    },
+    "related-tracks": {
+      "track-similarities-id-281565895": {
+        "id": "track-similarities-id-281565895",
+        "type": "related-tracks"
+      }
+    },
+    "songs": {
+      "1440828152": {
+        "id": "1440828152",
+        "type": "songs",
+        "attributes": {
+          "hasLyrics": true,
+          "hasTimeSyncedLyrics": true,
+          "unitags": [
+            {
+              "namespace": "MemoryAppropriateness",
+              "tag": "NotAppropriate",
+              "score": 0.78622603
+            },
+            {
+              "namespace": "EditorialGenres",
+              "tag": "Pop",
+              "score": 0.7561541
+            }
+          ]
+        }
+      }
+    },
+    "albums": {
+      "1440827260": {
+        "id": "1440827260",
+        "type": "albums",
+        "attributes": {
+          "artistName": "Lana Del Rey",
+          "name": "Honeymoon",
+          "releaseDate": "2015"
+        }
+      }
+    },
+    "artists": {
+      "464296584": {
+        "id": "464296584",
+        "attributes": {
+          "name": "Lana Del Rey",
+          "artwork": {
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages112/v4/99/da/66/99da66c2-f540-8406-0646-c95c85d64d04/e3d84d5f-c5b1-4769-8610-c0702bf35962_ami-identity-d8b71c87e7bea71100eb76a0935c9fa0-2022-12-12T15-36-57.679Z_cropped.png/{w}x{h}cc.jpg",
+            "textColor1": "ebeff7",
+            "textColor2": "e4e4eb",
+            "textColor3": "c8ccd6",
+            "textColor4": "c3c3cc",
+            "bgColor": "3e4150"
+          }
+        },
+        "type": "artists"
+      }
+    },
+    "genres": {
+      "20": {
+        "id": "20",
+        "attributes": {
+          "name": "Alternative"
+        },
+        "type": "genres"
+      },
+      "34": {
+        "id": "34",
+        "attributes": {
+          "name": "Music"
+        },
+        "type": "genres"
+      }
+    },
+    "shazam-songs": {
+      "281565895": {
+        "id": "281565895",
+        "type": "shazam-songs",
+        "attributes": {
+          "type": "MUSIC",
+          "title": "Salvatore",
+          "artist": "Lana Del Rey",
+          "primaryArtist": "Lana Del Rey",
+          "label": "Polydor Records",
+          "explicit": false,
+          "isrc": "GBUM71503927",
+          "webUrl": "https://www.shazam.com/track/281565895/salvatore?co=US&offsetInMilliseconds=57957&timeSkew=-3.7622452E-4&trackLength=281093",
+          "images": {
+            "artistAvatar": "https://is1-ssl.mzstatic.com/image/thumb/AMCArtistImages112/v4/99/da/66/99da66c2-f540-8406-0646-c95c85d64d04/e3d84d5f-c5b1-4769-8610-c0702bf35962_ami-identity-d8b71c87e7bea71100eb76a0935c9fa0-2022-12-12T15-36-57.679Z_cropped.png/800x800cc.jpg",
+            "coverArt": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/a2/e1/35/a2e1350a-c739-dc75-93f5-b3e8b33d7d7e/15UMGIM44419.rgb.jpg/400x400cc.jpg",
+            "coverArtHq": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/a2/e1/35/a2e1350a-c739-dc75-93f5-b3e8b33d7d7e/15UMGIM44419.rgb.jpg/800x800cc.jpg"
+          },
+          "artwork": {
+            "url": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/a2/e1/35/a2e1350a-c739-dc75-93f5-b3e8b33d7d7e/15UMGIM44419.rgb.jpg/{w}x{h}cc.jpg",
+            "textColor1": "231618",
+            "textColor2": "351f1e",
+            "textColor3": "403a40",
+            "textColor4": "4e4244",
+            "bgColor": "b2cede"
+          },
+          "share": {
+            "subject": "Salvatore - Lana Del Rey",
+            "text": "Salvatore by Lana Del Rey",
+            "image": "https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/a2/e1/35/a2e1350a-c739-dc75-93f5-b3e8b33d7d7e/15UMGIM44419.rgb.jpg/400x400cc.jpg",
+            "twitter": "@Shazam found Salvatore by Lana Del Rey:",
+            "html": "https://www.shazam.com/snippets/email-share/281565895?lang=en-US&country=US",
+            "snapchat": "https://www.shazam.com/partner/sc/track/281565895"
+          },
+          "genres": {
+            "primary": "Alternative"
+          },
+          "streaming": {
+            "preview": "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview115/v4/35/3d/fe/353dfe8c-c802-1880-19c0-2ec3de51617c/mzaf_3543345193729999085.plus.aac.ep.m4a",
+            "deeplink": "intent://music.apple.com/us/album/salvatore/1440827260?i=1440828152&mttnagencyid=s2n&mttnsiteid=125115&mttn3pid=Apple-Shazam&mttnsub1=Shazam_android_am&mttnsub2=5348615A-616D-3235-3830-44754D6D5973&itscg=30201&app=music&itsct=Shazam_android_am#Intent;scheme=http;package=com.apple.android.music;action=android.intent.action.VIEW;end",
+            "store": "https://play.google.com/store/apps/details?id=com.apple.android.music&referrer=utm_source=https%3A%2F%2Fmusic.apple.com%2Fsubscribe%3Fmttnagencyid%3Ds2n%26mttnsiteid%3D125115%26mttn3pid%3DApple-Shazam%26mttnsub1%3DShazam_android_am%26mttnsub2%3D5348615A-616D-3235-3830-44754D6D5973%26itscg%3D30201%26app%3Dmusic%26itsct%3DShazam_android_am"
+          },
+          "classicalAvailability": false
+        },
+        "relationships": {
+          "artist-highlights": {
+            "data": [
+              {
+                "id": "464296584",
+                "type": "artist-highlights"
+              }
+            ]
+          },
+          "related-tracks": {
+            "data": [
+              {
+                "id": "track-similarities-id-281565895",
+                "type": "related-tracks"
+              }
+            ]
+          },
+          "songs": {
+            "data": [
+              {
+                "id": "1440828152",
+                "type": "songs"
+              }
+            ]
+          },
+          "albums": {
+            "data": [
+              {
+                "id": "1440827260",
+                "type": "albums"
+              }
+            ]
+          },
+          "artists": {
+            "data": [
+              {
+                "id": "464296584",
+                "type": "artists"
+              }
+            ]
+          },
+          "genres": {
+            "data": [
+              {
+                "id": "20",
+                "type": "genres"
+              },
+              {
+                "id": "34",
+                "type": "genres"
+              }
+            ]
+          }
+        },
+        "meta": {
+          "matchOffset": 57.956773437,
+          "timeSkew": -0.00037622452,
+          "frequencySkew": 0.0007251501,
+          "sampleLength": 4000,
+          "duration": 281.093
+        }
+      }
+    }
+  },
+  "meta": {
+    "timestamp": 1783922521801,
+    "timezone": "America/Chicago",
+    "tagId": "1bf1a49e-d71e-4258-b49d-34bb2c41e845",
+    "beacons": {
+      "rectype": "classic"
+    }
+  }
+}
