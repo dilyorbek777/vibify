@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Clock, ListMusic, Heart, Zap, Users } from 'lucide-react'
+import { Home, Clock, ListMusic, Heart, Zap, Users, Award } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navigation = [
@@ -11,6 +11,7 @@ const navigation = [
   { name: 'My Playlists', href: '/myplaylists', icon: ListMusic },
   { name: 'Liked', href: '/liked', icon: Heart },
   { name: 'Following', href: '/following', icon: Users },
+  { name: 'Top Artists', href: '/top-artists', icon: Award },
   { name: 'Hover Demo', href: '/hover-anim', icon: Zap },
 ]
 
