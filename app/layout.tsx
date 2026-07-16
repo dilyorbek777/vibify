@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter, DM_Sans, Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/theme-context";
@@ -43,10 +43,6 @@ export const metadata: Metadata = {
   authors: [{ name: 'Vibify Team' }],
   creator: 'Vibify',
   publisher: 'Vibify',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
-  ],
 
 
   openGraph: {
@@ -76,6 +72,13 @@ export const metadata: Metadata = {
   },
 
 
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
+  ],
 };
 
 export default function RootLayout({

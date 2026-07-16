@@ -1,4 +1,4 @@
-import { getArtistDetails, getArtistAlbums, getArtistTopSongs, formatAppleMusicArtist, formatAppleMusicAlbum, formatShazamTrack } from '@/lib/shazam-api'
+import { getArtistSummary, formatAppleMusicArtist, formatAppleMusicAlbum, formatShazamTrack } from '@/lib/shazam-api'
 import { notFound } from 'next/navigation'
 import ArtistClient from './artist-client.tsx'
 
@@ -10,45 +10,23 @@ interface ArtistPageProps {
 
 export default async function ArtistPage({ params }: ArtistPageProps) {
   const { id: artistId } = await params
-  
-  let artistData = null
-  let albumsData: any[] = []
-  let topSongsData: any[] = []
+
+  let summaryData = null
   let error = null
 
   try {
-    // Stagger requests to avoid rate limiting
-    artistData = await getArtistDetails(artistId)
-    
-    // Only fetch albums if artist data was successfully retrieved
-    if (artistData) {
-      // Wait 500ms before next request
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      try {
-        albumsData = await getArtistAlbums(artistId)
-      } catch (albumErr) {
-        console.warn('Failed to fetch albums, continuing without them:', albumErr)
-      }
-      
-      // Wait another 500ms before final request
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      try {
-        topSongsData = await getArtistTopSongs(artistId)
-      } catch (songsErr) {
-        console.warn('Failed to fetch top songs, continuing without them:', songsErr)
-      }
-    }
+    summaryData = await getArtistSummary(artistId)
   } catch (err) {
-    console.error('Error fetching artist data:', err)
+    console.error('Error fetching artist summary:', err)
     error = err instanceof Error ? err.message : 'Failed to load artist data'
   }
 
-  if (!artistData && !error) {
+  if (!summaryData && !error) {
     notFound()
   }
 
+  // Extract artist data from summary
+  const artistData = summaryData?.resources?.artists?.[artistId]
   const artist = artistData ? formatAppleMusicArtist(artistData) : {
     id: artistId,
     name: 'Unknown Artist',
@@ -58,7 +36,18 @@ export default async function ArtistPage({ params }: ArtistPageProps) {
     verified: false,
   }
 
+  // Extract albums from summary
+  const albumsData = artistData?.relationships?.albums?.data?.map((albumRef: { id: string }) =>
+    summaryData?.resources?.albums?.[albumRef.id]
+  ).filter(Boolean) || []
+
   const albums = albumsData.map(formatAppleMusicAlbum)
+
+  // Extract top songs from summary
+  const topSongsData = artistData?.views?.['top-songs']?.data?.map((songRef: { id: string }) =>
+    summaryData?.resources?.songs?.[songRef.id]
+  ).filter(Boolean) || []
+
   const popularSongs = topSongsData.map(formatShazamTrack).slice(0, 10)
 
   return <ArtistClient artist={artist} albums={albums} popularSongs={popularSongs} error={error} />

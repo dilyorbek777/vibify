@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Play, Disc, Layers, Music4, Radio, UserStar, Heart, Plus } from 'lucide-react'
-import { searchSongs, formatShazamTrack } from '@/lib/shazam-api'
+import { searchSongs, formatShazamTrack, formatShazamArtist, SearchResult } from '@/lib/shazam-api'
 import { getLikedSongs, getRecentlyListened, getPlaylists, createPlaylist } from '@/lib/local-storage'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import Link from 'next/link'
@@ -18,7 +18,7 @@ function HomeContent() {
   const { playPlaylist, isPlaying, currentSong } = useMusicPlayer()
   const queryParam = searchParams.get('q') || ''
   const [searchQuery, setSearchQuery] = useState(queryParam)
-  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const [recentlyPlayed, setRecentlyPlayed] = useState<any[]>([])
@@ -55,8 +55,10 @@ function HomeContent() {
     const randomTerm = randomTerms[Math.floor(Math.random() * randomTerms.length)]
 
     try {
-      const tracks = await searchSongs(randomTerm, 8)
-      const formattedTracks = tracks.map(formatShazamTrack)
+      const results = await searchSongs(randomTerm, 8)
+      const formattedTracks = results
+        .filter(r => r.type === 'song')
+        .map(r => formatShazamTrack(r.data as any))
       setSuggestedMusic(formattedTracks)
     } catch (error) {
       console.error('Error fetching suggestions:', error)
@@ -76,9 +78,8 @@ function HomeContent() {
     setSearchError(null)
 
     try {
-      const tracks = await searchSongs(query, 8)
-      const formattedTracks = tracks.map(formatShazamTrack)
-      setSearchResults(formattedTracks)
+      const results = await searchSongs(query, 8)
+      setSearchResults(results)
     } catch (error) {
       console.error('Search error:', error)
       setSearchError('Failed to search. Please try again.')
@@ -202,7 +203,7 @@ function HomeContent() {
                   {isSearching ? 'Searching...' : `Results for "${searchQuery}"`}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  {searchError ? searchError : searchResults.length > 0 ? `Found ${searchResults.length} songs` : ''}
+                  {searchError ? searchError : searchResults.length > 0 ? `Found ${searchResults.filter(r => r.type === 'song').length} songs and ${searchResults.filter(r => r.type === 'artist').length} artists` : ''}
                 </p>
               </div>
             </div>
@@ -220,29 +221,77 @@ function HomeContent() {
                 ))}
               </div>
             ) : searchResults.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                {searchResults.map((track) => (
-                  <Link
-                    key={track.id}
-                    href={`/music/${track.id}`}
-                    className="group bg-card/30 hover:bg-card/70 border border-border/10 p-3 rounded-xl flex items-center gap-4 cursor-pointer transition-all duration-200"
-                  >
-                    <div className="h-14 w-14 rounded-md bg-muted/60 flex items-center justify-center text-2xl shrink-0 shadow-inner group-hover:scale-95 transition-transform duration-200 overflow-hidden">
-                      {track.coverArt ? (
-                        <img src={track.coverArt} alt={track.name} className="w-full h-full object-cover" />
-                      ) : (
-                        track.image
-                      )}
+              <>
+                {/* Artists Section */}
+                {searchResults.filter(r => r.type === 'artist').length > 0 && (
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold mb-4 font-heading">Artists</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                      {searchResults
+                        .filter(r => r.type === 'artist')
+                        .map((result) => {
+                          const artist = formatShazamArtist(result.data as any)
+                          return (
+                            <Link
+                              key={artist.id}
+                              href={`/artist/${artist.id}`}
+                              className="group bg-card/30 hover:bg-card/70 border border-border/10 p-3 rounded-xl flex items-center gap-4 cursor-pointer transition-all duration-200"
+                            >
+                              <div className="h-14 w-14 rounded-md bg-muted/60 flex items-center justify-center text-2xl shrink-0 shadow-inner group-hover:scale-95 transition-transform duration-200 overflow-hidden">
+                                {artist.image?.startsWith('http') ? (
+                                  <img src={artist.image} alt={artist.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span>{artist.image}</span>
+                                )}
+                              </div>
+                              <div className="overflow-hidden">
+                                <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
+                                  {artist.name}
+                                </h4>
+                                <p className="text-xs text-muted-foreground truncate">Artist</p>
+                              </div>
+                            </Link>
+                          )
+                        })}
                     </div>
-                    <div className="overflow-hidden">
-                      <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
-                        {track.name}
-                      </h4>
-                      <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
+                  </div>
+                )}
+
+                {/* Songs Section */}
+                {searchResults.filter(r => r.type === 'song').length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 font-heading">Songs</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                      {searchResults
+                        .filter(r => r.type === 'song')
+                        .map((result) => {
+                          const track = formatShazamTrack(result.data as any)
+                          return (
+                            <Link
+                              key={track.id}
+                              href={`/music/${track.id}`}
+                              className="group bg-card/30 hover:bg-card/70 border border-border/10 p-3 rounded-xl flex items-center gap-4 cursor-pointer transition-all duration-200"
+                            >
+                              <div className="h-14 w-14 rounded-md bg-muted/60 flex items-center justify-center text-2xl shrink-0 shadow-inner group-hover:scale-95 transition-transform duration-200 overflow-hidden">
+                                {track.coverArt ? (
+                                  <img src={track.coverArt} alt={track.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span>{track.image}</span>
+                                )}
+                              </div>
+                              <div className="overflow-hidden">
+                                <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
+                                  {track.name}
+                                </h4>
+                                <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
+                              </div>
+                            </Link>
+                          )
+                        })}
                     </div>
-                  </Link>
-                ))}
-              </div>
+                  </div>
+                )}
+              </>
             ) : searchError ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">{searchError}</p>

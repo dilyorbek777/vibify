@@ -7,11 +7,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import {
   Play, Pause, Check, MoreHorizontal, Users, Radio,
-  Disc, Award, Clock, Heart, Share2, Info
+  Disc, Award, Clock, Heart, Share2, Info,
+  BadgeCheck
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { isArtistFollowed, toggleFollowArtist } from '@/lib/local-storage'
+import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 
 interface ArtistClientProps {
   artist: {
@@ -43,9 +45,38 @@ interface ArtistClientProps {
 }
 
 export default function ArtistClient({ artist, albums, popularSongs, error }: ArtistClientProps) {
+  const { playPlaylist, togglePlay, isPlaying: globalIsPlaying, currentSong } = useMusicPlayer()
   const [activeTab, setActiveTab] = useState<'songs' | 'albums' | 'about'>('songs')
   const [isFollowing, setIsFollowing] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
+
+  // Check if any of the artist's songs are currently playing
+  const isArtistPlaying = currentSong && popularSongs.some(song => song.id === currentSong.id)
+
+  const handlePlayArtist = () => {
+    if (popularSongs.length === 0) return
+
+    if (isArtistPlaying && globalIsPlaying) {
+      // Pause if currently playing this artist
+      togglePlay()
+    } else {
+      // Play the artist's popular songs
+      const songs = popularSongs.map(song => ({
+        id: song.id,
+        name: song.name,
+        artist: song.artist,
+        album: song.album,
+        image: song.image,
+        totalSeconds: 0, // Will be updated by audio duration
+      }))
+
+      // Get preview URLs from the songs
+      const urls = popularSongs.map(song => song.url || '').filter(url => url !== '')
+
+      if (urls.length > 0) {
+        playPlaylist(songs, urls)
+      }
+    }
+  }
 
   if (error) {
     return (
@@ -80,14 +111,14 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
 
           {/* Identity Meta Block */}
           <div className="flex-1 text-center md:text-left space-y-3 min-w-0">
-            {artist.verified && (
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-transparent rounded-full px-3 py-1 font-semibold gap-1 text-xs tracking-wide uppercase pointer-events-none font-ui">
-                <Check className="h-3.5 w-3.5 stroke-[3]" /> Verified Artist
-              </Badge>
-            )}
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-none text-foreground drop-shadow-sm py-1 font-heading text-center md:text-left">
-              {artist.name}
+
+            <h1 className="text-3xl sm:text-4xl flex items-center justify-center md:justify-start gap-2 md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-none text-foreground drop-shadow-sm py-1 font-heading text-center md:text-left">
+              {artist.name} {artist.verified && (
+
+                <BadgeCheck className='text-primary' size={30} />
+
+              )}
             </h1>
 
             <div className="flex flex-wrap justify-center md:justify-start items-center gap-x-4 gap-y-1 text-sm font-medium text-muted-foreground">
@@ -102,11 +133,12 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
       {/* Action Core Menu Controls */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 flex items-center justify-center md:justify-start gap-3 md:gap-4">
         <Button
-          onClick={() => setIsPlaying(!isPlaying)}
+          onClick={handlePlayArtist}
           size="lg"
           className="rounded-full h-12 w-12 md:h-14 md:w-14 bg-primary text-primary-foreground shadow-xl hover:scale-105 transition-transform"
+          disabled={popularSongs.length === 0}
         >
-          {isPlaying ? <Pause className="h-6 w-6 fill-current" /> : <Play className="h-6 w-6 fill-current ml-0.5" />}
+          {isArtistPlaying && globalIsPlaying ? <Pause className="h-6 w-6 fill-current" /> : <Play className="h-6 w-6 fill-current ml-0.5" />}
         </Button>
 
         <Button
@@ -124,8 +156,8 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
             setIsFollowing(!isFollowing)
           }}
           className={`rounded-full px-6 font-bold h-10 border-border/60 transition-all ${isFollowing
-              ? 'border-primary/30 bg-primary/5 text-primary'
-              : 'bg-foreground text-background hover:bg-foreground/90'
+            ? 'border-primary/30 bg-primary/5 text-primary'
+            : 'bg-foreground text-background hover:bg-foreground/90'
             }`}
         >
           {isFollowing ? 'Following' : 'Follow'}
@@ -145,6 +177,8 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
           <TabsList className="bg-muted/40 p-1 border border-border/20 rounded-xl mb-6 md:mb-8 w-full justify-start overflow-x-auto">
             <TabsTrigger value="songs" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">Popular Tracks</TabsTrigger>
+            <TabsTrigger value="albums" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">Albums</TabsTrigger>
+            <TabsTrigger value="about" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">About</TabsTrigger>
           </TabsList>
 
           {/* Songs Content Grid View */}
@@ -203,7 +237,7 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
           <TabsContent value="albums" className="focus-visible:outline-none">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
               {albums.length > 0 ? albums.map(album => (
-                <Card
+                <Link href={`/album/${album.id}`}
                   key={album.id}
                   className="group relative overflow-hidden border-none bg-card/30 hover:bg-card/70 transition-all duration-300 cursor-pointer rounded-xl p-4 flex flex-col gap-4"
                 >
@@ -226,7 +260,7 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
                       <Disc className="h-3 w-3" /> {album.year}
                     </CardDescription>
                   </div>
-                </Card>
+                </Link>
               )) : (
                 <div className="col-span-full text-center py-12 text-muted-foreground">
                   No albums available

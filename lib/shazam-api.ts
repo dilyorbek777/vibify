@@ -27,6 +27,7 @@ interface ShazamSongAttributes {
     kind: string;
   };
   previewUrl?: string;
+  previews?: Array<{ url: string }>;
   releaseDate: string;
   url: string;
 }
@@ -37,15 +38,33 @@ interface ShazamSong {
   attributes: ShazamSongAttributes;
 }
 
+interface ShazamArtistAttributes {
+  artwork: ShazamArtwork;
+  genreNames: string[];
+  name: string;
+  url: string;
+}
+
+interface ShazamArtist {
+  id: string;
+  type: string;
+  attributes: ShazamArtistAttributes;
+}
+
 interface ShazamResponse {
   results: {
     artists?: {
-      data: any[];
+      data: ShazamArtist[];
     };
     songs: {
       data: ShazamSong[];
     };
   };
+}
+
+export interface SearchResult {
+  type: 'song' | 'artist';
+  data: ShazamSong | ShazamArtist;
 }
 
 const SHAZAM_API_HOST = 'shazam.p.rapidapi.com';
@@ -97,9 +116,9 @@ async function fetchWithFallback(url: string, options: RequestInit): Promise<Res
   return response;
 }
 
-export async function searchSongs(query: string, limit: number = 10, offset: number = 0): Promise<ShazamSong[]> {
+export async function searchSongs(query: string, limit: number = 10, offset: number = 0): Promise<SearchResult[]> {
   const url = `https://${SHAZAM_API_HOST}/v2/search?term=${encodeURIComponent(query)}&locale=en-US&offset=${offset}&limit=${limit}`;
-  
+
   const options = {
     method: 'GET',
     headers: {
@@ -109,40 +128,59 @@ export async function searchSongs(query: string, limit: number = 10, offset: num
 
   try {
     const response = await fetchWithFallback(url, options);
-    
+
     if (!response.ok) {
       if (response.status === 429) {
         throw new Error('API rate limit exceeded. Please wait a moment before searching again.');
       }
       throw new Error(`API request failed with status ${response.status}`);
     }
-    
+
     const result: any = await response.json();
-    
-    // Handle different possible response structures
-    let tracks: ShazamSong[] = [];
-    
-    if (result.results?.songs?.data) {
-      // New Apple Music API structure: { results: { songs: { data: [...] } } }
-      tracks = result.results.songs.data;
-    } else if (result.tracks?.hits) {
-      // Standard structure: { tracks: { hits: [{ track }] } }
-      tracks = result.tracks.hits.map((hit: any) => hit.track);
-    } else if (result.tracks) {
-      // Alternative structure: { tracks: [...] }
-      tracks = result.tracks;
-    } else if (Array.isArray(result)) {
-      // Direct array response
-      tracks = result;
-    } else if (result.list) {
-      // Another possible structure: { list: [...] }
-      tracks = result.list;
-    } else {
-      console.error('Unknown response structure, returning empty array');
-      return [];
+
+    const results: SearchResult[] = [];
+
+    // Handle artists from the new Apple Music API structure
+    if (result.results?.artists?.data && Array.isArray(result.results.artists.data)) {
+      result.results.artists.data.forEach((artist: ShazamArtist) => {
+        results.push({ type: 'artist', data: artist });
+      });
     }
-    
-    return tracks;
+
+    // Handle songs from the new Apple Music API structure
+    if (result.results?.songs?.data && Array.isArray(result.results.songs.data)) {
+      result.results.songs.data.forEach((song: ShazamSong) => {
+        results.push({ type: 'song', data: song });
+      });
+    }
+
+    // Fallback for older API structures
+    if (results.length === 0) {
+      if (result.tracks?.hits) {
+        // Standard structure: { tracks: { hits: [{ track }] } }
+        const tracks = result.tracks.hits.map((hit: any) => hit.track);
+        tracks.forEach((track: ShazamSong) => {
+          results.push({ type: 'song', data: track });
+        });
+      } else if (result.tracks) {
+        // Alternative structure: { tracks: [...] }
+        result.tracks.forEach((track: ShazamSong) => {
+          results.push({ type: 'song', data: track });
+        });
+      } else if (Array.isArray(result)) {
+        // Direct array response
+        result.forEach((track: ShazamSong) => {
+          results.push({ type: 'song', data: track });
+        });
+      } else if (result.list) {
+        // Another possible structure: { list: [...] }
+        result.list.forEach((track: ShazamSong) => {
+          results.push({ type: 'song', data: track });
+        });
+      }
+    }
+
+    return results;
   } catch (error) {
     console.error('Error searching songs:', error);
     throw error;
@@ -155,10 +193,13 @@ export function formatShazamTrack(track: ShazamSong) {
   const minutes = Math.floor(durationMs / 60000);
   const seconds = Math.floor((durationMs % 60000) / 1000);
   const duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  
+
   // Replace {w}x{h}bb with actual dimensions for cover art
   const coverArt = attrs.artwork?.url?.replace('{w}x{h}bb', '400x400bb') || '';
-  
+
+  // Extract preview URL from previews array
+  const previewUrl = attrs.previews?.[0]?.url || '';
+
   return {
     id: track.id,
     name: attrs.name || 'Unknown',
@@ -168,7 +209,58 @@ export function formatShazamTrack(track: ShazamSong) {
     image: '🎵',
     url: attrs.url || '',
     coverArt,
+    musicUrl: previewUrl, // Add musicUrl for audio playback
   };
+}
+
+export function formatShazamArtist(artist: ShazamArtist) {
+  const attrs = artist.attributes;
+  const coverArt = attrs.artwork?.url?.replace('{w}x{h}bb', '400x400bb') || '';
+
+  return {
+    id: artist.id,
+    name: attrs.name || 'Unknown Artist',
+    genres: attrs.genreNames || [],
+    image: coverArt || '🎤',
+    url: attrs.url || '',
+  };
+}
+
+interface ArtistSummaryResponse {
+  data: Array<{ id: string; type: string }>;
+  resources: {
+    albums: Record<string, { id: string; type: string; attributes: any }>;
+    artists: Record<string, { id: string; type: string; attributes: any; relationships: any; views: any }>;
+    songs: Record<string, { id: string; type: string; attributes: any }>;
+  };
+}
+
+export async function getArtistSummary(artistId: string): Promise<ArtistSummaryResponse> {
+  const url = `https://${SHAZAM_API_HOST}/artists/get-summary?id=${artistId}&l=en-US`;
+
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  try {
+    const response = await fetchWithFallback(url, options);
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('API rate limit exceeded. Please wait a moment before searching again.');
+      }
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const result: ArtistSummaryResponse = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error fetching artist summary:', error);
+    throw error;
+  }
 }
 
 export async function getSongDetails(id: string) {
