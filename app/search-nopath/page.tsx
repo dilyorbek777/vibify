@@ -40,7 +40,7 @@ export default function SearchPage() {
 
       try {
         const tracks = await searchSongs(searchQuery, 10)
-        const formattedResults = tracks.map(formatShazamTrack)
+        const formattedResults = tracks.map((track: any) => formatShazamTrack(track))
         setResults(formattedResults)
       } catch (err) {
         setError('Failed to fetch search results. Please try again.')
