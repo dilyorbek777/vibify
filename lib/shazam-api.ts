@@ -69,6 +69,52 @@ export interface SearchResult {
 
 const SHAZAM_API_HOST = 'shazam.p.rapidapi.com';
 
+const CACHE_PREFIX = 'vibify_api_cache_';
+const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+function getCacheKey(url: string, params?: Record<string, any>): string {
+  const paramString = params ? JSON.stringify(params) : '';
+  return `${CACHE_PREFIX}${btoa(url + paramString)}`;
+}
+
+function getCachedData<T>(cacheKey: string): T | null {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    if (!cached) return null;
+
+    const { data, timestamp } = JSON.parse(cached);
+    const isExpired = Date.now() - timestamp > CACHE_EXPIRY_MS;
+
+    if (isExpired) {
+      localStorage.removeItem(cacheKey);
+      return null;
+    }
+
+    console.log('Cache hit for:', cacheKey);
+    return data as T;
+  } catch (error) {
+    console.error('Error reading from cache:', error);
+    return null;
+  }
+}
+
+function setCachedData<T>(cacheKey: string, data: T): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    const cacheEntry = {
+      data,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem(cacheKey, JSON.stringify(cacheEntry));
+    console.log('Cached data for:', cacheKey);
+  } catch (error) {
+    console.error('Error writing to cache:', error);
+  }
+}
+
 function getApiKey(): string {
   return process.env.NEXT_PUBLIC_RAPIDAPI_KEY || '4f8712d382mshfaa3517bffdad81p136abfjsn293bbff5b12b';
 }
@@ -81,10 +127,22 @@ function getThirdApiKey(): string {
   return process.env.NEXT_PUBLIC_RAPIDAPI_KEY3 || '';
 }
 
+function getFourthApiKey(): string {
+  return process.env.NEXT_PUBLIC_RAPIDAPI_KEY4 || '';
+}
+
 async function fetchWithFallback(url: string, options: RequestInit): Promise<Response> {
   const firstKey = getApiKey();
   const fallbackKey = getFallbackApiKey();
   const thirdKey = getThirdApiKey();
+  const fourthKey = getFourthApiKey();
+
+  console.log('API Keys available:', {
+    first: firstKey ? '✓' : '✗',
+    fallback: fallbackKey ? '✓' : '✗',
+    third: thirdKey ? '✓' : '✗',
+    fourth: fourthKey ? '✓' : '✗',
+  });
 
   const makeRequest = async (apiKey: string) => {
     const requestOptions = {
@@ -103,14 +161,16 @@ async function fetchWithFallback(url: string, options: RequestInit): Promise<Res
   if (!response.ok && response.status === 429 && fallbackKey) {
     console.log('Primary API key quota exceeded, trying fallback key');
     response = await makeRequest(fallbackKey);
+  }
 
-    if (!response.ok && response.status === 429 && thirdKey) {
-      console.log('Fallback API key quota exceeded, trying third key');
-      response = await makeRequest(thirdKey);
-    }
-  } else if (!response.ok && response.status === 429 && !fallbackKey && thirdKey) {
-    console.log('Primary API key quota exceeded and no fallback key, trying third key');
+  if (!response.ok && response.status === 429 && thirdKey) {
+    console.log('Fallback API key quota exceeded, trying third key');
     response = await makeRequest(thirdKey);
+  }
+
+  if (!response.ok && response.status === 429 && fourthKey) {
+    console.log('Third API key quota exceeded, trying fourth key');
+    response = await makeRequest(fourthKey);
   }
 
   return response;
@@ -118,6 +178,13 @@ async function fetchWithFallback(url: string, options: RequestInit): Promise<Res
 
 export async function searchSongs(query: string, limit: number = 10, offset: number = 0): Promise<SearchResult[]> {
   const url = `https://${SHAZAM_API_HOST}/v2/search?term=${encodeURIComponent(query)}&locale=en-US&offset=${offset}&limit=${limit}`;
+  const cacheKey = getCacheKey(url, { limit, offset });
+
+  // Try to get cached data first
+  const cachedData = getCachedData<SearchResult[]>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
 
   const options = {
     method: 'GET',
@@ -180,6 +247,9 @@ export async function searchSongs(query: string, limit: number = 10, offset: num
       }
     }
 
+    // Cache the results
+    setCachedData(cacheKey, results);
+
     return results;
   } catch (error) {
     console.error('Error searching songs:', error);
@@ -237,6 +307,13 @@ interface ArtistSummaryResponse {
 
 export async function getArtistSummary(artistId: string): Promise<ArtistSummaryResponse> {
   const url = `https://${SHAZAM_API_HOST}/artists/get-summary?id=${artistId}&l=en-US`;
+  const cacheKey = getCacheKey(url);
+
+  // Try to get cached data first
+  const cachedData = getCachedData<ArtistSummaryResponse>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
 
   const options = {
     method: 'GET',
@@ -256,6 +333,10 @@ export async function getArtistSummary(artistId: string): Promise<ArtistSummaryR
     }
 
     const result: ArtistSummaryResponse = await response.json();
+
+    // Cache the results
+    setCachedData(cacheKey, result);
+
     return result;
   } catch (error) {
     console.error('Error fetching artist summary:', error);
@@ -265,7 +346,14 @@ export async function getArtistSummary(artistId: string): Promise<ArtistSummaryR
 
 export async function getSongDetails(id: string) {
   const url = `https://${SHAZAM_API_HOST}/songs/v2/get-details?id=${id}&l=en-US`;
-  
+  const cacheKey = getCacheKey(url);
+
+  // Try to get cached data first
+  const cachedData = getCachedData<any>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
   const options = {
     method: 'GET',
     headers: {
@@ -275,15 +363,19 @@ export async function getSongDetails(id: string) {
 
   try {
     const response = await fetchWithFallback(url, options);
-    
+
     if (!response.ok) {
       if (response.status === 429) {
         throw new Error('API rate limit exceeded. Please wait a moment before trying again.');
       }
       throw new Error(`API request failed with status ${response.status}`);
     }
-    
+
     const result: any = await response.json();
+
+    // Cache the results
+    setCachedData(cacheKey, result);
+
     return result;
   } catch (error) {
     console.error('Error fetching song details:', error);
@@ -356,7 +448,14 @@ const APPLE_MUSIC_API_HOST = 'apple-music-api.p.rapidapi.com';
 
 export async function getArtistDetails(artistId: string): Promise<AppleMusicArtistData | null> {
   const url = `https://${SHAZAM_API_HOST}/artists/get-details?id=${artistId}&l=en-US`;
-  
+  const cacheKey = getCacheKey(url);
+
+  // Try to get cached data first
+  const cachedData = getCachedData<AppleMusicArtistData | null>(cacheKey);
+  if (cachedData !== null) {
+    return cachedData;
+  }
+
   const options = {
     method: 'GET',
     headers: {
@@ -366,23 +465,27 @@ export async function getArtistDetails(artistId: string): Promise<AppleMusicArti
 
   try {
     const response = await fetchWithFallback(url, options);
-    
+
     if (!response.ok) {
       if (response.status === 429) {
         throw new Error('API rate limit exceeded. Please wait a moment before trying again.');
       }
       throw new Error(`API request failed with status ${response.status}`);
     }
-    
+
     const result: any = await response.json();
     console.log('Artist details API response:', JSON.stringify(result, null, 2));
-    
+
     // Handle different response structures
+    let finalResult = null;
     if (result.data && Array.isArray(result.data) && result.data.length > 0) {
-      return result.data[0];
+      finalResult = result.data[0];
     }
-    
-    return null;
+
+    // Cache the results
+    setCachedData(cacheKey, finalResult);
+
+    return finalResult;
   } catch (error) {
     console.error('Error fetching artist details:', error);
     throw error;
@@ -391,7 +494,14 @@ export async function getArtistDetails(artistId: string): Promise<AppleMusicArti
 
 export async function getArtistAlbums(artistId: string): Promise<AppleMusicAlbumData[]> {
   const url = `https://${SHAZAM_API_HOST}/artists/get-details?id=${artistId}&l=en-US`;
-  
+  const cacheKey = getCacheKey(url);
+
+  // Try to get cached data first
+  const cachedData = getCachedData<AppleMusicAlbumData[]>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
   const options = {
     method: 'GET',
     headers: {
@@ -401,24 +511,28 @@ export async function getArtistAlbums(artistId: string): Promise<AppleMusicAlbum
 
   try {
     const response = await fetchWithFallback(url, options);
-    
+
     if (!response.ok) {
       if (response.status === 429) {
         throw new Error('API rate limit exceeded. Please wait a moment before trying again.');
       }
       throw new Error(`API request failed with status ${response.status}`);
     }
-    
+
     const result: any = await response.json();
     console.log('Albums API response:', JSON.stringify(result, null, 2));
-    
+
     // The artist details response includes album IDs in relationships
+    let finalResult: AppleMusicAlbumData[] = [];
     if (result.data && result.data[0] && result.data[0].relationships && result.data[0].relationships.albums) {
       // Return the album IDs - we'll need to fetch details separately if needed
-      return result.data[0].relationships.albums.data || [];
+      finalResult = result.data[0].relationships.albums.data || [];
     }
-    
-    return [];
+
+    // Cache the results
+    setCachedData(cacheKey, finalResult);
+
+    return finalResult;
   } catch (error) {
     console.error('Error fetching artist albums:', error);
     throw error;
@@ -427,7 +541,14 @@ export async function getArtistAlbums(artistId: string): Promise<AppleMusicAlbum
 
 export async function getArtistTopSongs(artistId: string): Promise<ShazamSong[]> {
   const url = `https://${SHAZAM_API_HOST}/artists/get-top-songs?id=${artistId}&l=en-US`;
-  
+  const cacheKey = getCacheKey(url);
+
+  // Try to get cached data first
+  const cachedData = getCachedData<ShazamSong[]>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
   const options = {
     method: 'GET',
     headers: {
@@ -437,23 +558,27 @@ export async function getArtistTopSongs(artistId: string): Promise<ShazamSong[]>
 
   try {
     const response = await fetchWithFallback(url, options);
-    
+
     if (!response.ok) {
       if (response.status === 429) {
         throw new Error('API rate limit exceeded. Please wait a moment before trying again.');
       }
       throw new Error(`API request failed with status ${response.status}`);
     }
-    
+
     const result: any = await response.json();
     console.log('Top songs API response:', JSON.stringify(result, null, 2));
-    
+
     // Handle different response structures
+    let finalResult: ShazamSong[] = [];
     if (result.data && Array.isArray(result.data)) {
-      return result.data;
+      finalResult = result.data;
     }
-    
-    return [];
+
+    // Cache the results
+    setCachedData(cacheKey, finalResult);
+
+    return finalResult;
   } catch (error) {
     console.error('Error fetching artist top songs:', error);
     throw error;

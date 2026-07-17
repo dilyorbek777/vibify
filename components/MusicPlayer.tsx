@@ -2,13 +2,55 @@
 
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
-import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat } from 'lucide-react'
+import { Play, Pause, SkipBack, SkipForward, Volume2, Download, PackageCheck } from 'lucide-react'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { indexedDBManager } from '@/lib/indexeddb'
 
 export function MusicPlayer() {
   const { currentSong, isPlaying, progress, audioUrl, volume, togglePlay, handleSeek, handleVolumeChange, playNext, playPrevious } = useMusicPlayer()
+  const [isDownloaded, setIsDownloaded] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  useEffect(() => {
+    async function checkDownloadStatus() {
+      if (currentSong) {
+        const downloaded = await indexedDBManager.isDownloaded(currentSong.id)
+        setIsDownloaded(downloaded)
+      }
+    }
+    checkDownloadStatus()
+  }, [currentSong])
+
+  const handleDownload = async () => {
+    if (!currentSong || !audioUrl || isDownloading) return
+
+    setIsDownloading(true)
+
+    try {
+      const response = await fetch(audioUrl)
+      if (!response.ok) throw new Error('Failed to download audio')
+
+      const blob = await response.blob()
+
+      await indexedDBManager.saveAudio({
+        songId: currentSong.id,
+        songName: currentSong.name,
+        artist: currentSong.artist,
+        album: currentSong.album,
+        coverArt: currentSong.image,
+        audioBlob: blob,
+        audioUrl: audioUrl
+      })
+
+      setIsDownloaded(true)
+    } catch (error) {
+      console.error('Download error:', error)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
 useEffect(() => {
   const handleKeydown = (e: KeyboardEvent) => {
@@ -72,15 +114,20 @@ useEffect(() => {
             <span>{formatTime(100)}</span>
           </div>
         </div>
-        {/* re-play the song when it pressed the song becomes looped */}
-        <Button onClick={() => {
-          // TODO: Implement repeat functionality
-          console.log('repeat');
-
-          // TODO: Implement repeat functionality
-          // audioRef.current?.play();
-        }} variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-          <Repeat className="h-4 w-4 fill-current" />
+        <Button
+          onClick={handleDownload}
+          disabled={isDownloading}
+          variant="ghost"
+          size="icon"
+          className={`h-8 w-8 ${isDownloaded ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          {isDownloading ? (
+            <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+          ) : isDownloaded ? (
+            <PackageCheck className="h-4 w-4" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
         </Button>
         <div className="w-1/4 justify-end gap-3 items-center hidden md:flex text-muted-foreground">
           <Volume2 className="h-4 w-4 shrink-0" />

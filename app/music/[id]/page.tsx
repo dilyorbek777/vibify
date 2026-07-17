@@ -7,7 +7,8 @@ import { DropdownMenu, DropdownMenuItem, DropdownMenuHeader, DropdownMenuSeparat
 import { Toast } from '@/components/ui/toast'
 import { getSongDetails, getArtistDetails, getArtistTopSongs, formatShazamTrack } from '@/lib/shazam-api'
 import { addToRecentlyListened, isSongLiked, toggleLikedSong, getPlaylists, createPlaylist, addSongToPlaylist } from '@/lib/local-storage'
-import { Play, Pause, Heart, MoreHorizontal, Disc, Calendar, Flame, Music3, Music4, Plus } from 'lucide-react'
+import { indexedDBManager } from '@/lib/indexeddb'
+import { Play, Pause, Heart, MoreHorizontal, Disc, Calendar, Flame, Music3, Music4, Plus, Download, PackageCheck } from 'lucide-react'
 import Link from 'next/link'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 import BackgroundPattern from '@/components/BackgroundPattern'
@@ -29,10 +30,22 @@ export default function MusicPage() {
   const [newPlaylistName, setNewPlaylistName] = useState('')
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isDownloaded, setIsDownloaded] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   useEffect(() => {
     setPlaylists(getPlaylists())
   }, [])
+
+  useEffect(() => {
+    async function checkDownloadStatus() {
+      if (params.id) {
+        const downloaded = await indexedDBManager.isDownloaded(params.id as string)
+        setIsDownloaded(downloaded)
+      }
+    }
+    checkDownloadStatus()
+  }, [params.id])
 
   useEffect(() => {
     async function fetchSong() {
@@ -124,7 +137,7 @@ export default function MusicPage() {
     const name = newPlaylistName.trim() || undefined
     const newPlaylist = createPlaylist(name)
     setPlaylists([...playlists, newPlaylist])
-    
+
     if (song) {
       addSongToPlaylist(newPlaylist.id, {
         id: song.id,
@@ -136,10 +149,43 @@ export default function MusicPage() {
       })
       setToastMessage(`Added to "${newPlaylist.name}"`)
     }
-    
+
     setNewPlaylistName('')
     setShowCreatePlaylist(false)
     setIsDropdownOpen(false)
+  }
+
+  const handleDownload = async () => {
+    if (!song || !audioUrl || isDownloading) return
+
+    setIsDownloading(true)
+
+    try {
+      // Fetch the audio file
+      const response = await fetch(audioUrl)
+      if (!response.ok) throw new Error('Failed to download audio')
+
+      const blob = await response.blob()
+
+      // Save to IndexedDB
+      await indexedDBManager.saveAudio({
+        songId: song.id,
+        songName: song.name,
+        artist: song.artist,
+        album: song.album,
+        coverArt: song.coverArt,
+        audioBlob: blob,
+        audioUrl: audioUrl
+      })
+
+      setIsDownloaded(true)
+      setToastMessage('Song downloaded successfully!')
+    } catch (error) {
+      console.error('Download error:', error)
+      setToastMessage('Failed to download song')
+    } finally {
+      setIsDownloading(false)
+    }
   }
 
   const handleAddToPlaylist = (playlistId: string) => {
@@ -256,7 +302,21 @@ export default function MusicPage() {
               >
                 <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
               </Button>
-
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleDownload}
+                disabled={isDownloading}
+                className={`rounded-full h-12 w-12 border-border/60 ${isDownloaded ? 'text-primary border-primary/40 bg-primary/5' : 'hover:bg-muted'}`}
+              >
+                {isDownloading ? (
+                  <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full" />
+                ) : isDownloaded ? (
+                  <PackageCheck className="h-5 w-5" />
+                ) : (
+                  <Download className="h-5 w-5" />
+                )}
+              </Button>
 
               <DropdownMenu
                 isOpen={isDropdownOpen}

@@ -1001,3 +1001,26 @@ forward-logs-shared.ts:95 Detection API response: {
     }
   }
 }
+
+
+import axios from 'axios';
+
+const options = {
+  method: 'GET',
+  url: 'https://shazam.p.rapidapi.com/v2/auto-complete',
+  params: {
+    term: 'kiss the',
+    locale: 'en-US'
+  },
+  headers: {
+    'x-rapidapi-host': 'shazam.p.rapidapi.com',
+    'Content-Type': 'application/json'
+  }
+};
+
+try {
+ const response = await axios.request(options);
+ console.log(response.data);
+} catch (error) {
+ console.error(error);
+}

@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import MobileBottomBar from "@/components/MobileBottomBar";
+import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
@@ -48,13 +49,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://vibify.vercel.app', // Swap with your actual URL later
+    url: 'https://vibify-depo.vercel.app', // Swap with your actual URL later
     siteName: 'Vibify',
     title: 'Vibify - Your Music, Perfectly Tuned',
     description: 'Immerse yourself in a sleek, dark-mode audio ecosystem. Stream, curate, and discover your next favorite track with zero friction.',
     images: [
       {
-        url: 'https://vibify.vercel.app/og-image.png', // Create a cool screenshot/logo for this path
+        url: 'https://vibify-depo.vercel.app/og-image.png', // Create a cool screenshot/logo for this path
         width: 1200,
         height: 630,
         alt: 'Vibify Music Player Dashboard preview',
@@ -68,7 +69,7 @@ export const metadata: Metadata = {
     title: 'Vibify - Stream Your Rhythm',
     description: 'A premium, ultra-fast music streaming app built with Next.js and Tailwind CSS.',
     creator: '@vibify_app', // Swap with your handle if you make one
-    images: ['https://vibify.vercel.app/og-image.png'],
+    images: ['https://vibify-depo.vercel.app/og-image.png'],
   },
 
 
@@ -89,6 +90,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${dmSans.variable} ${montserrat.variable} ${geistSans.variable} ${geistMono.variable}`}>
+        <ServiceWorkerRegistration />
         {/* Wrap everything inside the body with your provider */}
         <ThemeProvider>
           <MusicPlayerProvider>

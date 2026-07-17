@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react'
 import { getRecentlyListened } from '@/lib/local-storage'
+import { indexedDBManager } from '@/lib/indexeddb'
 
 interface Song {
   id: string
@@ -47,12 +48,21 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
     }
   }, [volume])
 
-  const playSong = (song: Song, url: string) => {
+  const playSong = async (song: Song, url: string) => {
     setCurrentSong(song)
-    setAudioUrl(url)
     setProgress([0])
     setPlaylist(null)
     setCurrentPlaylistIndex(0)
+
+    // Check if song is downloaded and use cached audio
+    const downloadedAudio = await indexedDBManager.getAudio(song.id)
+    if (downloadedAudio) {
+      const blobUrl = URL.createObjectURL(downloadedAudio.audioBlob)
+      setAudioUrl(blobUrl)
+    } else {
+      setAudioUrl(url)
+    }
+
     setIsPlaying(true)
 
     // Play the audio after a short delay to ensure the audio element is rendered
@@ -63,13 +73,24 @@ export function MusicPlayerProvider({ children }: { children: ReactNode }) {
     }, 100)
   }
 
-  const playPlaylist = (songs: Song[], urls: string[]) => {
+  const playPlaylist = async (songs: Song[], urls: string[]) => {
     if (songs.length === 0) return
 
-    setPlaylist({ songs, urls })
+    // Check each song for downloaded audio
+    const processedUrls = await Promise.all(
+      urls.map(async (url, index) => {
+        const downloadedAudio = await indexedDBManager.getAudio(songs[index].id)
+        if (downloadedAudio) {
+          return URL.createObjectURL(downloadedAudio.audioBlob)
+        }
+        return url
+      })
+    )
+
+    setPlaylist({ songs, urls: processedUrls })
     setCurrentPlaylistIndex(0)
     setCurrentSong(songs[0])
-    setAudioUrl(urls[0])
+    setAudioUrl(processedUrls[0])
     setProgress([0])
     setIsPlaying(true)
 
