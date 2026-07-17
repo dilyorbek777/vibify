@@ -26,7 +26,7 @@ export default function GenrePage() {
   const fetchSongsFromAPI = useCallback(async (offset: number = 0) => {
     try {
       const tracks = await searchSongs(`${genre} music`, SONGS_PER_FETCH, offset)
-      const formattedTracks = tracks.map(formatShazamTrack)
+      const formattedTracks = tracks.map((track: any) => formatShazamTrack(track))
       return formattedTracks
     } catch (error) {
       console.error('Error fetching genre songs:', error)
