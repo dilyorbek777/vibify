@@ -151,7 +151,7 @@ export default function PlaylistDetailPage() {
             <p className="text-sm text-muted-foreground/60">Add songs from the music page</p>
           </div>
         ) : (
-          <div className="space-y-1 relative z-100" >
+          <div className="space-y-1 relative z-10" >
             {playlist.songs.map((song: any, index: number) => (
               <div
                 key={song.id}

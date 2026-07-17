@@ -100,7 +100,7 @@ export default function Playlists() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {playlists.map((playlist) => (
-              <Card
+              <Link href={`/myplaylists/${playlist.id}`} 
                 key={playlist.id}
                 className="group relative overflow-hidden border-none bg-card/30 hover:bg-card/70 transition-all duration-300 rounded-xl p-4 flex flex-col gap-4"
               >
@@ -111,10 +111,8 @@ export default function Playlists() {
                     <Music4 size={55} className='text-primary' />
                   )}
                   <div className="absolute bottom-3 right-3 translate-y-4 opacity-0 scale-90 group-hover:translate-y-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300">
-                    <Button asChild size="icon" className="h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-xl hover:scale-105 transition-transform cursor-pointer">
-                      <Link href={`/myplaylists/${playlist.id}`}>
-                        <Play className="h-5 w-5 fill-current" />
-                      </Link>
+                    <Button size="icon" className="h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-xl hover:scale-105 transition-transform cursor-pointer">
+                      <Play className="h-5 w-5 fill-current" />
                     </Button>
                   </div>
                 </div>
@@ -166,7 +164,7 @@ export default function Playlists() {
                     {playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}
                   </CardDescription>
                 </div>
-              </Card>
+              </Link >
             ))}
           </div>
         )}
