@@ -94,7 +94,7 @@ export default function DownloadedPage() {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2 font-heading">
+            <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2 font-sans">
               Downloaded Songs
             </h1>
             <p className="text-muted-foreground">

@@ -197,7 +197,9 @@ export default function MusicPage() {
         artist: song.artist,
         album: song.album,
         image: song.image,
-        musicUrl: audioUrl || ''
+        musicUrl: audioUrl || '',
+        duration: `${Math.floor(song.totalSeconds / 60)}:${(song.totalSeconds % 60).toString().padStart(2, '0')}`,
+        totalSeconds: song.totalSeconds
       })
       if (playlist) {
         setToastMessage(`Added to "${playlist.name}"`)
@@ -251,9 +253,9 @@ export default function MusicPage() {
           </div>
           <div className="flex-1 space-y-3 min-w-0">
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-extrabold tracking-tight truncate leading-none font-heading">{song.name}</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-extrabold tracking-tight truncate leading-none font-sans">{song.name}</h1>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm font-medium text-muted-foreground">
-              <span className="text-foreground font-bold text-base hover:underline cursor-pointer font-heading">{song.artist}</span>
+              <span className="text-foreground font-bold text-base hover:underline cursor-pointer font-sans">{song.artist}</span>
               <span className="text-muted-foreground/40">•</span>
               <span className="flex items-center gap-1"><Disc className="h-3.5 w-3.5" /> {song.album}</span>
               <span className="text-muted-foreground/40">•</span>
@@ -362,7 +364,7 @@ export default function MusicPage() {
               {showCreatePlaylist && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                   <div className="bg-card border border-border/40 rounded-xl p-6 w-96 max-w-[90vw]">
-                    <h3 className="text-lg font-bold mb-4 font-heading">Create New Playlist</h3>
+                    <h3 className="text-lg font-bold mb-4 font-sans">Create New Playlist</h3>
                     <input
                       type="text"
                       placeholder="Playlist name (optional)"
@@ -396,7 +398,7 @@ export default function MusicPage() {
 
       <main className="max-w-7xl z-10 relative mx-auto px-4 md:px-6 mt-6 md:mt-8">
         <section className="space-y-6">
-          <h2 className="text-xl font-bold tracking-tight font-heading">More Info</h2>
+          <h2 className="text-xl font-bold tracking-tight font-sans">More Info</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {artistIds.map((artistId) => (
               <Link
@@ -414,7 +416,7 @@ export default function MusicPage() {
                 <div className="absolute inset-0 flex items-end p-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Artist</p>
-                    <h3 className="text-lg font-bold text-white font-heading">{song.artist}</h3>
+                    <h3 className="text-lg font-bold text-white font-sans">{song.artist}</h3>
                   </div>
                 </div>
               </Link>
@@ -434,7 +436,7 @@ export default function MusicPage() {
                 <div className="absolute inset-0 flex items-end p-4">
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Album</p>
-                    <h3 className="text-lg font-bold text-white font-heading">{song.album}</h3>
+                    <h3 className="text-lg font-bold text-white font-sans">{song.album}</h3>
                   </div>
                 </div>
               </Link>
@@ -444,7 +446,7 @@ export default function MusicPage() {
 
         {artistTopSongs.length > 0 && (
           <section className="space-y-6 mt-12">
-            <h2 className="text-xl font-bold tracking-tight font-heading">More from {song.artist}</h2>
+            <h2 className="text-xl font-bold tracking-tight font-sans">More from {song.artist}</h2>
             <div className="space-y-1">
               {artistTopSongs.map((song, index) => (
                 <Link
@@ -467,14 +469,14 @@ export default function MusicPage() {
                     </div>
 
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-sm tracking-tight text-foreground truncate group-hover:text-primary transition-colors font-heading">
+                      <h4 className="font-bold text-sm tracking-tight text-foreground truncate group-hover:text-primary transition-colors font-sans">
                         {song.name}
                       </h4>
                       <p className="text-xs text-muted-foreground truncate mt-0.5">{song.artist}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-12 text-xs font-semibold text-muted-foreground tabular-nums font-ui">
+                  <div className="flex items-center gap-12 text-xs font-semibold text-muted-foreground tabular-nums font-sans">
                     <span className="w-10 text-right pr-2">{song.duration}</span>
                   </div>
                 </Link>

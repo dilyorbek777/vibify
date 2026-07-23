@@ -115,11 +115,11 @@ export default function PlaylistDetailPage() {
         <div className="mb-8">
           <Link href="/myplaylists" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4 transition-colors">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Playlists
+            Back to Playlists 
           </Link>
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight font-heading mb-2">{playlist.name}</h1>
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight font-sans mb-2">{playlist.name}</h1>
               <p className="text-muted-foreground">{playlist.songs.length} {playlist.songs.length === 1 ? 'song' : 'songs'}</p>
             </div>
             <div className="flex gap-2 shrink-0">
@@ -160,9 +160,8 @@ export default function PlaylistDetailPage() {
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, index)}
                 onDragEnd={handleDragEnd}
-                className={`group flex items-center justify-between p-4 rounded-xl transition-colors duration-150 cursor-move ${
-                  draggedIndex === index ? 'bg-primary/20 border-2 border-primary' : 'hover:bg-card/50'
-                }`}
+                className={`group flex items-center justify-between p-4 rounded-xl transition-colors duration-150 cursor-move ${draggedIndex === index ? 'bg-primary/20 border-2 border-primary' : 'hover:bg-card/50'
+                  }`}
               >
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                   <div className="w-6 text-center text-sm font-semibold text-muted-foreground shrink-0 flex items-center justify-center">
@@ -178,7 +177,7 @@ export default function PlaylistDetailPage() {
                   </div>
 
                   <div className="overflow-hidden">
-                    <h4 className="font-bold text-sm tracking-tight text-foreground truncate font-heading">
+                    <h4 className="font-bold text-sm tracking-tight text-foreground truncate font-sans">
                       {song.name}
                     </h4>
                     <p className="text-xs text-muted-foreground truncate">{song.artist}</p>

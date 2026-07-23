@@ -16,7 +16,7 @@ export default function GenreNotFound() {
             </div>
           </div>
           
-          <h1 className="text-4xl font-bold tracking-tight font-heading">Genre Not Found</h1>
+          <h1 className="text-4xl font-bold tracking-tight font-sans">Genre Not Found</h1>
           
           <p className="text-muted-foreground max-w-md mx-auto">
             The genre you're looking for doesn't exist. Try exploring our available genres.

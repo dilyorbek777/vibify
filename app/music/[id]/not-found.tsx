@@ -16,7 +16,7 @@ export default function MusicNotFound() {
             </div>
           </div>
           
-          <h1 className="text-4xl font-bold tracking-tight font-heading">Song Not Found</h1>
+          <h1 className="text-4xl font-bold tracking-tight font-sans">Song Not Found</h1>
           
           <p className="text-muted-foreground max-w-md mx-auto">
             The song you're looking for doesn't exist or has been removed.

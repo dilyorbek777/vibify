@@ -13,7 +13,7 @@ export default function TopArtistsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-heading mb-2 flex items-center gap-3">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-sans mb-2 flex items-center gap-3">
               <Award className="h-8 w-8 text-primary" />
               Top Artists
             </h1>
@@ -51,7 +51,7 @@ export default function TopArtistsPage() {
                     <Music className="h-8 w-8 text-primary/60" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold tracking-tight truncate group-hover:text-primary transition-colors font-heading">
+                    <h3 className="text-lg font-bold tracking-tight truncate group-hover:text-primary transition-colors font-sans">
                       {artist.artist}
                     </h3>
                     <p className="text-sm text-muted-foreground/80 font-medium">

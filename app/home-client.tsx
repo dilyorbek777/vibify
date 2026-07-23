@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,8 +12,7 @@ import Link from 'next/link'
 import BackgroundPattern from '@/components/BackgroundPattern'
 import { MoodCategoriesSection } from '@/components/moodCategories'
 
-// 1. Change this from default export to a regular function named HomeContent
-function HomeContent() {
+export default function HomeContent() {
   const searchParams = useSearchParams()
   const { playPlaylist, isPlaying, currentSong } = useMusicPlayer()
   const queryParam = searchParams.get('q') || ''
@@ -127,7 +126,6 @@ function HomeContent() {
   }, [searchQuery, handleSearch])
 
   return (
-    // 2. Remove the <Suspense> tags from here entirely
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 relative">
       <BackgroundPattern />
 
@@ -533,14 +531,5 @@ function HomeContent() {
         </section>
       </main>
     </div>
-  )
-}
-
-// 3. Create the clean default export wrapper at the bottom
-export default function Home() {
-  return (
-    <Suspense fallback={<div className="p-8 text-center">Loading Vibify...</div>}>
-      <HomeContent />
-    </Suspense>
   )
 }

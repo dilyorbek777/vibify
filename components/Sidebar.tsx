@@ -20,14 +20,14 @@ const Sidebar = () => {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden font-heading lg:flex fixed left-0 top-0 bottom-0 w-64 flex-col border-r border-border/40 bg-background/80 backdrop-blur-xl z-40">
+    <aside className="hidden font-sans lg:flex fixed left-0 top-0 bottom-0 w-64 flex-col border-r border-border/40 bg-background/80 backdrop-blur-xl z-40">
       {/* Logo */}
       <div className="p-6 border-b border-border/20">
         <Link href="/" className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black">
             V
           </div>
-          <span className="text-xl font-black tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent font-heading">
+          <span className="text-xl font-black tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent font-sans">
             vibify<span className="text-primary">.</span>
           </span>
         </Link>

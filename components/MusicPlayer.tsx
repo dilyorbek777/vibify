@@ -92,7 +92,7 @@ useEffect(() => {
             )}
           </div>
           <div className="overflow-hidden">
-            <h4 className="font-bold text-sm truncate tracking-tight font-heading">{currentSong.name}</h4>
+            <h4 className="font-bold text-sm truncate tracking-tight font-sans">{currentSong.name}</h4>
             <p className="text-xs text-muted-foreground truncate">{currentSong.artist}</p>
           </div>
         </Link>
@@ -108,7 +108,7 @@ useEffect(() => {
               <SkipForward className="h-4 w-4 fill-current" />
             </Button>
           </div>
-          <div className="w-full flex items-center gap-3 text-xs font-medium text-muted-foreground tabular-nums font-ui">
+          <div className="w-full flex items-center gap-3 text-xs font-medium text-muted-foreground tabular-nums font-sans">
             <span>{formatTime(progress[0])}</span>
             <Slider value={progress} onValueChange={handleSeek} className="flex-1 cursor-pointer" disabled={!audioUrl} />
             <span>{formatTime(100)}</span>

@@ -16,7 +16,7 @@ export default function AlbumNotFound() {
             </div>
           </div>
           
-          <h1 className="text-4xl font-bold tracking-tight font-heading">Album Not Found</h1>
+          <h1 className="text-4xl font-bold tracking-tight font-sans">Album Not Found</h1>
           
           <p className="text-muted-foreground max-w-md mx-auto">
             The album you're looking for doesn't exist or has been removed.

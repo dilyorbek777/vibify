@@ -229,6 +229,8 @@ interface PlaylistSong {
   album: string
   image: string
   musicUrl: string
+  duration?: string
+  totalSeconds?: number
 }
 
 interface Playlist {

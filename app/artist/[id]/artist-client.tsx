@@ -14,6 +14,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { isArtistFollowed, toggleFollowArtist } from '@/lib/local-storage'
 import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
+import { getAlbumDetails, formatAlbumTrack } from '@/lib/shazam-api'
 
 interface ArtistClientProps {
   artist: {
@@ -49,6 +50,11 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
   const [activeTab, setActiveTab] = useState<'songs' | 'albums' | 'about'>('songs')
   const [isFollowing, setIsFollowing] = useState(false)
 
+  // Initialize follow state from localStorage
+  useEffect(() => {
+    setIsFollowing(isArtistFollowed(artist.id))
+  }, [artist.id])
+
   // Check if any of the artist's songs are currently playing
   const isArtistPlaying = currentSong && popularSongs.some(song => song.id === currentSong.id)
 
@@ -75,6 +81,60 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
       if (urls.length > 0) {
         playPlaylist(songs, urls)
       }
+    }
+  }
+
+  const handlePlayAlbum = async (albumId: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    try {
+      const albumData = await getAlbumDetails(albumId)
+      if (!albumData?.relationships?.tracks?.data) return
+
+      const tracks = albumData.relationships.tracks.data
+      const songs = tracks.map(track => {
+        const formatted = formatAlbumTrack(track)
+        return {
+          id: formatted.id,
+          name: formatted.name,
+          artist: formatted.artist,
+          album: formatted.album,
+          image: formatted.coverArt || '🎵',
+          totalSeconds: 0,
+        }
+      })
+
+      const urls = tracks.map(track => {
+        const formatted = formatAlbumTrack(track)
+        return formatted.previewUrl
+      }).filter(url => url !== '')
+
+      if (urls.length > 0) {
+        playPlaylist(songs, urls)
+      }
+    } catch (error) {
+      console.error('Error playing album:', error)
+    }
+  }
+
+  const handleShare = async () => {
+    const shareUrl = window.location.href
+    const shareData = {
+      title: artist.name,
+      text: `Check out ${artist.name} on Vibify`,
+      url: shareUrl,
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+      } else {
+        await navigator.clipboard.writeText(shareUrl)
+        alert('Link copied to clipboard!')
+      }
+    } catch (error) {
+      console.error('Error sharing:', error)
     }
   }
 
@@ -113,7 +173,7 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
           <div className="flex-1 text-center md:text-left space-y-3 min-w-0">
 
 
-            <h1 className="text-3xl sm:text-4xl flex items-center justify-center md:justify-start gap-2 md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-none text-foreground drop-shadow-sm py-1 font-heading text-center md:text-left">
+            <h1 className="text-3xl sm:text-4xl flex items-center justify-center md:justify-start gap-2 md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-none text-foreground drop-shadow-sm py-1 font-sans text-center md:text-left">
               {artist.name} {artist.verified && (
 
                 <BadgeCheck className='text-primary' size={30} />
@@ -163,7 +223,12 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
           {isFollowing ? 'Following' : 'Follow'}
         </Button>
 
-        <Button variant="outline" size="icon" className="rounded-full h-10 w-10 border-border/60 text-muted-foreground hover:text-foreground">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="rounded-full h-10 w-10 border-border/60 text-muted-foreground hover:text-foreground"
+          onClick={handleShare}
+        >
           <Share2 className="h-4 w-4" />
         </Button>
 
@@ -176,14 +241,14 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
       <main className="max-w-7xl mx-auto px-4 md:px-6 mt-4">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
           <TabsList className="bg-muted/40 p-1 border border-border/20 rounded-xl mb-6 md:mb-8 w-full justify-start overflow-x-auto">
-            <TabsTrigger value="songs" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">Popular Tracks</TabsTrigger>
-            <TabsTrigger value="albums" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">Albums</TabsTrigger>
-            <TabsTrigger value="about" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-ui whitespace-nowrap">About</TabsTrigger>
+            <TabsTrigger value="songs" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-sans whitespace-nowrap">Popular Tracks</TabsTrigger>
+            <TabsTrigger value="albums" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-sans whitespace-nowrap">Albums</TabsTrigger>
+            <TabsTrigger value="about" className="rounded-lg px-3 md:px-4 py-2 font-semibold text-xs md:text-sm font-sans whitespace-nowrap">About</TabsTrigger>
           </TabsList>
 
           {/* Songs Content Grid View */}
           <TabsContent value="songs" className="space-y-4 focus-visible:outline-none">
-            <div className="flex items-center justify-between border-b border-border/10 pb-2 mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase px-4 font-ui">
+            <div className="flex items-center justify-between border-b border-border/10 pb-2 mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase px-4 font-sans">
               <div className="flex items-center gap-4">
                 <span>#</span>
                 <span>Title</span>
@@ -214,14 +279,14 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
                     </div>
 
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-sm tracking-tight text-foreground truncate group-hover:text-primary transition-colors font-heading">
+                      <h4 className="font-bold text-sm tracking-tight text-foreground truncate group-hover:text-primary transition-colors font-sans">
                         {song.name}
                       </h4>
                       <p className="text-xs text-muted-foreground truncate mt-0.5">{song.artist}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-12 text-xs font-semibold text-muted-foreground tabular-nums font-ui">
+                  <div className="flex items-center gap-12 text-xs font-semibold text-muted-foreground tabular-nums font-sans">
                     <span className="w-10 text-right pr-2">{song.duration}</span>
                   </div>
                 </Link>
@@ -248,14 +313,18 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
                       <span className="text-5xl">{album.image}</span>
                     )}
                     <div className="absolute bottom-3 right-3 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-200">
-                      <Button size="icon" className="h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg">
+                      <Button 
+                        size="icon" 
+                        className="h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg"
+                        onClick={(e) => handlePlayAlbum(album.id, e)}
+                      >
                         <Play className="h-4 w-4 fill-current" />
                       </Button>
                     </div>
                   </div>
 
                   <div className="space-y-1 px-1">
-                    <CardTitle className="text-sm font-bold tracking-tight truncate group-hover:text-primary transition-colors font-heading">{album.name}</CardTitle>
+                    <CardTitle className="text-sm font-bold tracking-tight truncate group-hover:text-primary transition-colors font-sans">{album.name}</CardTitle>
                     <CardDescription className="text-xs text-muted-foreground/80 flex items-center gap-1.5 font-medium">
                       <Disc className="h-3 w-3" /> {album.year}
                     </CardDescription>
@@ -278,30 +347,30 @@ export default function ArtistClient({ artist, albums, popularSongs, error }: Ar
                     <Award className="h-8 w-8" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold tracking-tight mb-0.5 font-heading">Artist Information</h3>
+                    <h3 className="text-xl font-bold tracking-tight mb-0.5 font-sans">Artist Information</h3>
                     <p className="text-xs text-muted-foreground">Artist data from Apple Music API for {artist.name}.</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4 border-t border-border/10">
                   <div className="bg-muted/30 p-4 rounded-xl border border-border/10">
-                    <p className="text-xs font-semibold mb-1 text-muted-foreground uppercase tracking-wider font-ui">Albums</p>
+                    <p className="text-xs font-semibold mb-1 text-muted-foreground uppercase tracking-wider font-sans">Albums</p>
                     <p className="text-xl font-black text-foreground tabular-nums">{albums.length}</p>
                   </div>
                   <div className="bg-muted/30 p-4 rounded-xl border border-border/10">
-                    <p className="text-xs font-semibold mb-1 text-muted-foreground uppercase tracking-wider font-ui">Popular Tracks</p>
+                    <p className="text-xs font-semibold mb-1 text-muted-foreground uppercase tracking-wider font-sans">Popular Tracks</p>
                     <p className="text-xl font-black text-foreground tabular-nums">{popularSongs.length}</p>
                   </div>
                   <div className="bg-muted/30 p-4 rounded-xl border border-border/10">
-                    <p className="text-xs font-semibold mb-1 text-muted-foreground uppercase tracking-wider font-ui">Genres</p>
+                    <p className="text-xs font-semibold mb-1 text-muted-foreground uppercase tracking-wider font-sans">Genres</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {artist.genres.slice(0, 2).map(g => (
-                        <Badge key={g} variant="outline" className="text-[10px] py-0 border-border/60 font-bold bg-background/50 text-muted-foreground pointer-events-none font-ui">{g}</Badge>
+                        <Badge key={g} variant="outline" className="text-[10px] py-0 border-border/60 font-bold bg-background/50 text-muted-foreground pointer-events-none font-sans">{g}</Badge>
                       ))}
                     </div>
                   </div>
                   <div className="bg-muted/30 p-4 rounded-xl border border-border/10">
-                    <p className="text-xs font-semibold mb-1 text-muted-foreground uppercase tracking-wider font-ui">Status</p>
+                    <p className="text-xs font-semibold mb-1 text-muted-foreground uppercase tracking-wider font-sans">Status</p>
                     <p className="text-xl font-black text-foreground tabular-nums">{artist.verified ? 'Verified' : 'Unverified'}</p>
                   </div>
                 </div>

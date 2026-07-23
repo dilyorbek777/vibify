@@ -157,9 +157,9 @@ export default function DetectedSongPage() {
             )}
           </div>
           <div className="flex-1 space-y-3 min-w-0">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-extrabold tracking-tight truncate leading-none font-heading">{songData.title}</h1>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-extrabold tracking-tight truncate leading-none font-sans">{songData.title}</h1>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm font-medium text-muted-foreground">
-              <span className="text-foreground font-bold text-base hover:underline cursor-pointer font-heading">{songData.artist}</span>
+              <span className="text-foreground font-bold text-base hover:underline cursor-pointer font-sans">{songData.artist}</span>
               {albumData && (
                 <>
                   <span className="text-muted-foreground/40">•</span>
@@ -209,30 +209,30 @@ export default function DetectedSongPage() {
 
       <main className="max-w-7xl z-10 relative mx-auto px-4 md:px-6 mt-6 md:mt-8">
         <section className="space-y-6">
-          <h2 className="text-xl font-bold tracking-tight font-heading">Detection Details</h2>
+          <h2 className="text-xl font-bold tracking-tight font-sans">Detection Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {artistId && artistData && (
               <div className="p-4 rounded-xl border border-border/30 bg-card/30">
                 <p className="text-xs text-muted-foreground mb-1">Artist</p>
-                <h3 className="text-lg font-bold font-heading">{artistData.name}</h3>
+                <h3 className="text-lg font-bold font-sans">{artistData.name}</h3>
               </div>
             )}
             {albumData && (
               <div className="p-4 rounded-xl border border-border/30 bg-card/30">
                 <p className="text-xs text-muted-foreground mb-1">Album</p>
-                <h3 className="text-lg font-bold font-heading">{albumData.name}</h3>
+                <h3 className="text-lg font-bold font-sans">{albumData.name}</h3>
               </div>
             )}
             {songData.genres?.primary && (
               <div className="p-4 rounded-xl border border-border/30 bg-card/30">
                 <p className="text-xs text-muted-foreground mb-1">Genre</p>
-                <h3 className="text-lg font-bold font-heading">{songData.genres.primary}</h3>
+                <h3 className="text-lg font-bold font-sans">{songData.genres.primary}</h3>
               </div>
             )}
             {songData.label && (
               <div className="p-4 rounded-xl border border-border/30 bg-card/30">
                 <p className="text-xs text-muted-foreground mb-1">Label</p>
-                <h3 className="text-lg font-bold font-heading">{songData.label}</h3>
+                <h3 className="text-lg font-bold font-sans">{songData.label}</h3>
               </div>
             )}
           </div>

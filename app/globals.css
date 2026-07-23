@@ -8,9 +8,9 @@
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-dm-sans);
-  --font-ui: var(--font-montserrat);
+  --font-mono: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --font-ui: var(--font-sans);
   --color-ring: hsl(var(--ring));
   --color-border: hsl(var(--border));
   --color-destructive: hsl(var(--destructive));
@@ -51,4 +51,18 @@
   /* font-weight */
   /* font-family */
   
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  background-color: hsl(var(--background));
+}
+ 
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary));
+  border-radius: 4px;
+}
+ 
+::-webkit-scrollbar-track {
+  background-color: hsl(var(--background));
 }

@@ -60,7 +60,7 @@ export function MoodCategoriesSection() {
     <section className="w-full py-12 mx-auto px-4 z-10 relative">
       <div className="flex items-center gap-2 mb-6">
         <Heart className="h-5 w-5 text-primary" />
-        <h2 className="text-2xl font-bold tracking-tight font-heading">Explore Moods</h2>
+        <h2 className="text-2xl font-bold tracking-tight font-sans">Explore Moods</h2>
       </div>
       <p className="text-sm text-muted-foreground max-md:hidden mb-8">
         Discover music tailored to your current activity, mindset, or energy level.
@@ -85,7 +85,7 @@ export function MoodCategoriesSection() {
               </div>
 
               <div className="space-y-1.5 px-1">
-                <h3 className="text-base font-bold tracking-tight line-clamp-1 font-heading">{mood.title}</h3>
+                <h3 className="text-base font-bold tracking-tight line-clamp-1 font-sans">{mood.title}</h3>
                 <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                   {mood.description}
                 </p>

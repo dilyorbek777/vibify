@@ -102,7 +102,7 @@ export default function GenrePage() {
         <section className='z-10 relative'>
           <div className="flex items-center gap-2 mb-6">
             <Layers className="h-5 w-5 text-primary" />
-            <h1 className="text-3xl font-bold tracking-tight font-heading">{displayGenre}</h1>
+            <h1 className="text-3xl font-bold tracking-tight font-sans">{displayGenre}</h1>
           </div>
           <p className="text-muted-foreground">
             {isLoading ? 'Loading songs...' : songs.length > 0 ? `${songs.length} songs found` : 'No songs found'}
@@ -146,7 +146,7 @@ export default function GenrePage() {
                     )}
                   </div>
                   <div className="overflow-hidden">
-                    <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-heading">
+                    <h4 className="font-semibold text-sm tracking-tight truncate group-hover:text-primary transition-colors font-sans">
                       {track.name}
                     </h4>
                     <p className="text-xs text-muted-foreground truncate">{track.artist}</p>

@@ -28,7 +28,7 @@ export default function FollowingPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-heading mb-2">Following</h1>
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight font-sans mb-2">Following</h1>
             <p className="text-muted-foreground">
               {followedArtists.length} {followedArtists.length === 1 ? 'artist' : 'artists'} you follow
             </p>
@@ -63,14 +63,14 @@ export default function FollowingPage() {
                   )}
                   
                   {artist.verified && (
-                    <Badge variant="secondary" className="absolute bottom-3 left-3 bg-primary/10 text-primary border-transparent rounded-full px-2 py-0.5 font-semibold gap-1 text-[10px] tracking-wide uppercase pointer-events-none font-ui z-20">
+                    <Badge variant="secondary" className="absolute bottom-3 left-3 bg-primary/10 text-primary border-transparent rounded-full px-2 py-0.5 font-semibold gap-1 text-[10px] tracking-wide uppercase pointer-events-none font-sans z-20">
                       <Check className="h-2.5 w-2.5 stroke-[3]" />
                     </Badge>
                   )}
                 </div>
                 
                 <div className="space-y-1 px-1 z-20">
-                  <h3 className="text-sm font-bold tracking-tight truncate group-hover:text-primary transition-colors font-heading">
+                  <h3 className="text-sm font-bold tracking-tight truncate group-hover:text-primary transition-colors font-sans">
                     {artist.name}
                   </h3>
                   <p className="text-xs text-muted-foreground/80 flex items-center gap-1.5 font-medium truncate">

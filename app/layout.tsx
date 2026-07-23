@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Inter, DM_Sans, Montserrat } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { MusicPlayerProvider } from "@/contexts/MusicPlayerContext";
@@ -11,28 +11,6 @@ import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -89,7 +67,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${dmSans.variable} ${montserrat.variable} ${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${inter.variable}`}>
         <ServiceWorkerRegistration />
         {/* Wrap everything inside the body with your provider */}
         <ThemeProvider>

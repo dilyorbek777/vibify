@@ -76,16 +76,16 @@ export default function AlbumContent({
           <div className="flex flex-col justify-end space-y-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-ui">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-sans">
                   {attrs.isSingle ? 'Single' : 'Album'}
                 </span>
                 {attrs.contentRating === 'explicit' && (
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-ui">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-sans">
                     Explicit
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight font-heading">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight font-sans">
                 {attrs.name}
               </h1>
               <div className="flex flex-wrap items-center gap-2 text-lg text-muted-foreground">
@@ -128,7 +128,7 @@ export default function AlbumContent({
             )}
 
             {/* Metadata */}
-            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-2 font-ui">
+            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground pt-2 font-sans">
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 <span>Released {new Date(attrs.releaseDate).toLocaleDateString()}</span>
@@ -147,7 +147,7 @@ export default function AlbumContent({
 
         {/* Tracks List */}
         <div className="space-y-2">
-          <div className="grid grid-cols-[auto_1fr_auto] gap-4 px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/20 font-ui">
+          <div className="grid grid-cols-[auto_1fr_auto] gap-4 px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/20 font-sans">
             <span className="w-8 text-center">#</span>
             <span>Title</span>
             <span className="flex items-center gap-1">
@@ -177,7 +177,7 @@ export default function AlbumContent({
                   />
                 )}
                 <div className="min-w-0">
-                  <p className="font-medium truncate group-hover:text-primary transition-colors font-heading">
+                  <p className="font-medium truncate group-hover:text-primary transition-colors font-sans">
                     {track.name}
                   </p>
                   <p className="text-sm text-muted-foreground truncate">

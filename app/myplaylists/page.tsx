@@ -7,8 +7,10 @@ import { Music4, Play, Trash2, Edit2, Plus } from 'lucide-react'
 import { getPlaylists, deletePlaylist, updatePlaylistName, createPlaylist } from '@/lib/local-storage'
 import Link from 'next/link'
 import BackgroundPattern from '@/components/BackgroundPattern'
+import { useMusicPlayer } from '@/contexts/MusicPlayerContext'
 
 export default function Playlists() {
+  const { playPlaylist } = useMusicPlayer()
   const [playlists, setPlaylists] = useState<any[]>([])
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
@@ -55,13 +57,30 @@ export default function Playlists() {
     setShowCreatePlaylist(false)
   }
 
+  const handlePlayPlaylist = (playlist: any, e: React.MouseEvent) => {
+    e.preventDefault()
+    if (playlist.songs.length === 0) return
+
+    const songs = playlist.songs.map((song: any) => ({
+      id: song.id,
+      name: song.name,
+      artist: song.artist,
+      album: song.album,
+      image: song.image,
+      totalSeconds: song.totalSeconds || 0
+    }))
+
+    const urls = playlist.songs.map((song: any) => song.musicUrl)
+    playPlaylist(songs, urls)
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-24">
       <BackgroundPattern />
       <main className="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 pb-20 md:pb-24">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight font-heading mb-2">My Playlists</h1>
+            <h1 className="text-3xl font-bold tracking-tight font-sans mb-2">My Playlists</h1>
             <p className="text-muted-foreground">Manage your personal music collections</p>
           </div>
           <Button onClick={() => setShowCreatePlaylist(true)} className="cursor-pointer">
@@ -111,7 +130,11 @@ export default function Playlists() {
                     <Music4 size={55} className='text-primary' />
                   )}
                   <div className="absolute bottom-3 right-3 translate-y-4 opacity-0 scale-90 group-hover:translate-y-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300">
-                    <Button size="icon" className="h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-xl hover:scale-105 transition-transform cursor-pointer">
+                    <Button 
+                      size="icon" 
+                      className="h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-xl hover:scale-105 transition-transform cursor-pointer"
+                      onClick={(e) => handlePlayPlaylist(playlist, e)}
+                    >
                       <Play className="h-5 w-5 fill-current" />
                     </Button>
                   </div>
@@ -137,7 +160,7 @@ export default function Playlists() {
                     </div>
                   ) : (
                     <div className="flex items-start justify-between gap-2">
-                      <CardTitle className="text-base font-bold tracking-tight line-clamp-1 font-heading flex-1">
+                      <CardTitle className="text-base font-bold tracking-tight line-clamp-1 font-sans flex-1">
                         {playlist.name}
                       </CardTitle>
                       <div className="flex gap-1 shrink-0">
